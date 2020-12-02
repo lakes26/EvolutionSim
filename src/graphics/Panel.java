@@ -2,10 +2,11 @@ package graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
+import java.util.ArrayList;
 import javax.swing.JPanel;
-
+import simulation.Agent;
 import simulation.Environment;
+import simulation.Food;
 
 public class Panel extends JPanel{
 	private static final long serialVersionUID = -310866009165515372L;
@@ -16,8 +17,8 @@ public class Panel extends JPanel{
 	public Panel(Environment environment) {
 		this.environment = environment;
 		
-		this.width = 300;  // TODO get from the environment
-		this.height = 300;
+		this.width = 1000;  // TODO get from the environment
+		this.height = 1000;
 	}
 		
 	@Override
@@ -32,19 +33,21 @@ public class Panel extends JPanel{
 		 * environment.getFoodArray
 		 */
 		
-		int[][] agents = {{10, 10}, {100, 200}};
-		int[][] foods = {{30, 50}, {150, 150}};
+		//int[][] agents = {{10, 10}, {100, 200}};
+		//int[][] foods = {{30, 50}, {150, 150}};
+		ArrayList<Agent> agents = environment.getAgents();
+		ArrayList<Food> foods = environment.getFood();
 		
 		// draw the agents
 		g.setColor(Color.RED);
-		for (int[] agent : agents) {
-			g.fillOval(agent[0], agent[1], 2 * 20, 2 * 20);  // TODO get the correct radius
+		for (Agent agent : agents) {
+			g.fillOval((int)agent.getX(), (int)agent.getY(), (int)agent.getRadius() * 2, (int)agent.getRadius() * 2);  // TODO get the correct radius
 		}
 		
 		// draw the food
 		g.setColor(Color.BLUE);
-		for (int[] food : foods) {
-			g.fillOval(food[0], food[1], 2 * 10, 2 * 10);  // TODO get the correct radius
+		for (Food food : foods) {
+		    g.fillOval((int)food.getX(), (int)food.getY(), (int)food.getRadius() * 2, (int)food.getRadius() * 2);
 		}		
 	}
 }

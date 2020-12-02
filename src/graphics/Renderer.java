@@ -26,7 +26,7 @@ public class Renderer {
 
 		// setup the JFrame		
 		this.frame.add(this.panel);		
-		this.frame.setSize(300, 300);  // TODO add the width and height from the environment
+		this.frame.setSize(1000, 1000);  // TODO add the width and height from the environment
 		this.frame.setResizable(false);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.frame.setVisible(true);
@@ -38,7 +38,7 @@ public class Renderer {
 	public void render() {
 		// tick the environment
 		//this.environment.tick();  // TODO uncomment..
-		
+		environment.tick();
 		// rerender the game
 		this.panel.repaint();
 	}

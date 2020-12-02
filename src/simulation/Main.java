@@ -8,7 +8,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		Environment env = new Environment();
-		
+		env.init();
 		Renderer renderer = new Renderer();		
 		renderer.init(env);
 		

@@ -6,13 +6,15 @@ import java.util.Random;
 public class Environment {
     private static int foodRadius = 10;
     private static int numFoodSpawned = 10;
-    private static int ticksBetweenFoodSpawn = 500;
-    private static int startingNumAgents = 90;
+    private static int ticksBetweenFoodSpawn = 50;
+    private static int startingNumAgents = 15;
     private static int startingNumFood = 60;
     private static int minAgentSize = 5;
     private static int maxAgentSize = 20;
     private static int minAgentSpeed = 1;
     private static int maxAgentSpeed = 10;
+    private static float mutationRate = (float) 0.05;
+    private static int maxAge = 2000;
 	private int tickrate, height, width, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 	private ArrayList<Food> foodList;
 	private ArrayList<Agent> agentList;
@@ -34,7 +36,7 @@ public class Environment {
 	    for(int i = 0; i < agentList.size(); i++) {
 	        Agent agent = agentList.get(i);
 	        agent.update(tickrate, foodList);
-//	        for(int f = 0; f < foodList.size(); f++) {
+			//	        for(int f = 0; f < foodList.size(); f++) {
 //	            Food food = foodList.get(f);
 //	            if(agent.isCollidingWith(food)) {
 //	                agent.addEnergy(food.getEnergy());
@@ -42,22 +44,23 @@ public class Environment {
 //	                f--;
 //	            }
 //	        }
+	 
 	        if(agent.getEnergy() > splitThreshold) {
 	            //100 is spawndistance. probably shouldn't be a literal, but who cares
-	            Agent newAgent = new Agent(agent, 100);
+	            Agent newAgent = new Agent(agent, 100, mutationRate);
 	            agentList.add(newAgent);
 	            agent.setEnergy(0);
 	        }
-	        if(agent.getEnergy() < deathThreshold) {
+	        if(agent.getEnergy() < deathThreshold || agent.getAge() >= maxAge) {
 	            agentList.remove(i);
 	            i--;
 	        }
-	        ticksUntilFoodSpawn--;
-	        if(ticksUntilFoodSpawn <= 0) {
-	            spawnRandomNewFood(numFoodSpawned);
-	            ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
-	        }
 	    }
+	    ticksUntilFoodSpawn--;
+        if(ticksUntilFoodSpawn <= 0) {
+            spawnRandomNewFood(numFoodSpawned);
+            ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
+        }
 	}
 	
 	public void init() {
@@ -65,9 +68,6 @@ public class Environment {
 	        agentList.add(createRandomAgent());
 	    }
 	    spawnRandomNewFood(startingNumFood);
-	    for(Food food: foodList) {
-	        System.out.println(food.getX() + ", " + food.getY());
-	    }
 	}
 	
 	public Agent createRandomAgent() {
@@ -82,7 +82,7 @@ public class Environment {
 	    for(int i = 0; i < amt; i++) {
 	        float x = rand.nextInt(width);
 	        float y = rand.nextInt(height);
-	        float energy = 1;
+	        float energy = (float) 1;
 	        foodList.add(new Food(x, y, foodRadius, energy));
 	    }
 	}

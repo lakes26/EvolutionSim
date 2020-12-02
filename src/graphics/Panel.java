@@ -1,9 +1,12 @@
 package graphics;
 
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+
 import javax.swing.JPanel;
+
 import simulation.Agent;
 import simulation.Environment;
 import simulation.Food;

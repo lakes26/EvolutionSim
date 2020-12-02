@@ -1,6 +1,7 @@
 package simulation;
 
 import java.util.List;
+import java.util.Random;
 
 public class Agent extends CollidableObject{
 	private float speed;
@@ -12,6 +13,7 @@ public class Agent extends CollidableObject{
 		super(x, y, radius);
 		this.direction = direction;
 		this.speed = speed;
+		this.age = 0;
 	}
 	
 	/**
@@ -19,10 +21,11 @@ public class Agent extends CollidableObject{
 	 * @param agent agent to be duplicated
 	 * @param spawnDistance distance duplicate will be spawned away from original
 	 */
-	public Agent(Agent agent, float spawnDistance) {
+	public Agent(Agent agent, float spawnDistance, float mutationRate) {
 	    super(agent.getX() + spawnDistance, agent.getY() + spawnDistance, agent.getRadius());
 	    this.direction = 0;
-	    this.speed = agent.getSpeed();
+	    this.speed = (float) (agent.getSpeed() + mutationRate * new Random().nextGaussian());
+	    this.age = 0;
 	}
 	
 	

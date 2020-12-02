@@ -1,4 +1,4 @@
-package Simulation;
+package simulation;
 
 public class CollidableObject {
 

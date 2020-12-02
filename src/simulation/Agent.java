@@ -2,10 +2,11 @@ package simulation;
 
 import java.util.List;
 
-public class Agent extends CollidableObject{	
+public class Agent extends CollidableObject{
 	private float speed;
 	private	float direction;
 	private	float energy;
+	private float age;
 	
 	public Agent(float x, float y, float radius, float direction) {
 		super(x, y, radius);
@@ -20,6 +21,15 @@ public class Agent extends CollidableObject{
 			food.remove(closestFood);
 			this.energy += closestFood.getEnergy();
 		}
+		this.age += 1/tickrate;
+	}
+	
+	public float getEnergy() {
+		return this.energy;
+	}
+	
+	public float getAge() {
+		return this.age;
 	}
 
 	private void move(int tickrate) {

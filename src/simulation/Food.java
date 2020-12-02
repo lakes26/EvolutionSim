@@ -2,14 +2,14 @@ package simulation;
 
 public class Food extends CollidableObject{
 	
-	private int energy;
+	private float energy;
 	
-	public Food(float x, float y, float radius, int energy) {
+	public Food(float x, float y, float radius, float energy) {
 		super(x, y, radius);
 		this.energy = energy;
 	}
 	
-	public int getEnergy() {
+	public float getEnergy() {
 		return this.energy;
 	}
 }

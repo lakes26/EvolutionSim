@@ -16,7 +16,7 @@ public class NeuralAgent extends Agent {
 		this.setEnergy(0);
 		this.setAge(0);
 		this.perceptiveRange = 200;
-		this.neuralNet = new NeuralNetwork(inputLength,8,8,3);
+		this.neuralNet = new NeuralNetwork(inputLength, 6, 3);
 	}
 
 	public NeuralAgent(NeuralAgent a, float mutationRate) {
@@ -92,8 +92,8 @@ public class NeuralAgent extends Agent {
 		} else {
 			this.turnRight();
 		}
-		this.move(e.getTickrate());
-		this.addEnergy((float) (-this.getSpeed() * 0.005));
+		//this.move(e.getTickrate());
+		//this.addEnergy((float) (-this.getSpeed() * 0.005));
 		
 		Food closestFood = this.findClosestFood(e.getFood());
 		if(closestFood != null) {

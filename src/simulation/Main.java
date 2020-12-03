@@ -13,6 +13,9 @@ public class Main {
 	public static void main(String[] args) {
 		Environment env = new Environment();
 		env.init();
+		for(int i = 0; i < 20000; i++) {
+			env.tick();
+		}
 		Renderer renderer = new Renderer();		
 		renderer.init(env);
 		

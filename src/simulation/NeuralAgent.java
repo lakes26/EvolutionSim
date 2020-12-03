@@ -7,28 +7,24 @@ import utils.NeuralNetwork;
 
 public class NeuralAgent extends Agent {
 	
-	private float speed;
-	private	float direction;
-	private	float energy;
-	private float age;
-	private static int inputLength = 6;
+	private static int inputLength = 8;
 	private float perceptiveRange;
 	private NeuralNetwork neuralNet;
 	
 	public NeuralAgent(float x, float y, float radius, float direction, float speed) {
 		super(x, y, radius, direction, speed);
-		this.energy = 0;
-		this.age = 0;
-		this.perceptiveRange = 100;
-		this.neuralNet = new NeuralNetwork(inputLength,8,3);
+		this.setEnergy(0);
+		this.setAge(0);
+		this.perceptiveRange = 200;
+		this.neuralNet = new NeuralNetwork(inputLength,8,8,3);
 	}
-	
+
 	public NeuralAgent(NeuralAgent a, float mutationRate) {
 		super(a.x + 100, a.y + 100, a.radius, 0, a.speed);
 		this.neuralNet = a.neuralNet.mutate(mutationRate);
 		this.energy = 0;
 		this.age = 0;
-		this.perceptiveRange = 100;
+		this.perceptiveRange = 200;
 	}
 	
 	public float getEnergy() {
@@ -48,27 +44,29 @@ public class NeuralAgent extends Agent {
 		for(Food food : e.getFood()) {
 			float angle = this.angleBetween(food);
 			if(this.getDistance(food) <= this.perceptiveRange && angle <= this.direction + Math.PI/12 && angle >= this.direction - Math.PI/12) {
-				inputArray[2] = 1;
+				inputArray[2]++;
 			}
 			else if(this.getDistance(food) <= this.perceptiveRange && angle <= this.direction - Math.PI/12 && angle <= this.direction - 3 * Math.PI/12) {
-				inputArray[4] = 1;
+				inputArray[4]++;
 			}
 			else if(this.getDistance(food) <= this.perceptiveRange && angle <= this.direction + 3 * Math.PI/12 && angle >= this.direction + Math.PI/12) {
-				inputArray[0] = 1;
+				inputArray[0]++;
 			}
 		}
 		for(Agent agent : e.getAgents()) {
 			float angle = this.angleBetween(agent);
 			if(this.getDistance(agent) <= this.perceptiveRange && angle <= this.direction + Math.PI/12 && angle >= this.direction - Math.PI/12) {
-				inputArray[3] = 1;
+				inputArray[3]++;
 			}
 			else if(this.getDistance(agent) <= this.perceptiveRange && angle <= this.direction - Math.PI/12 && angle <= this.direction - 3 * Math.PI/12) {
-				inputArray[5] = 1;
+				inputArray[5]++;
 			}
 			else if(this.getDistance(agent) <= this.perceptiveRange && angle <= this.direction + 3 * Math.PI/12 && angle >= this.direction + Math.PI/12) {
-				inputArray[1] = 1;
+				inputArray[1]++;
 			}
 		}
+		inputArray[6] = this.x;
+		inputArray[7]= this.y;
 		return Matrix.fromArray(inputArray);
 	}
 	
@@ -90,21 +88,21 @@ public class NeuralAgent extends Agent {
 			this.turnLeft();
 		} else if(maxIndex == 1) {
 			this.move(e.getTickrate());
-			this.energy -= speed * 0.01;
+			this.addEnergy((float) (-this.getSpeed() * 0.005));
 		} else {
 			this.turnRight();
 		}
 		this.move(e.getTickrate());
-		this.energy -= speed * 0.01;
+		this.addEnergy((float) (-this.getSpeed() * 0.005));
 		
 		Food closestFood = this.findClosestFood(e.getFood());
 		if(closestFood != null) {
 			if(this.isCollidingWith(closestFood)) {
 				e.getFood().remove(closestFood);
-				this.energy += closestFood.getEnergy();
+				this.addEnergy(closestFood.getEnergy());
 			}
 		}
-		this.age += 1/e.getTickrate();
+		this.setAge(this.getAge() + 1/e.getTickrate());
 	}
 
 	

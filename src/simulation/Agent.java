@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Random;
 
 public class Agent extends CollidableObject{
-	private float speed;
-	private	float direction;
-	private	float energy;
-	private float age;
+	protected float speed;
+	protected float direction;
+	protected float energy;
+	protected float age;
 	
 	public Agent(float x, float y, float radius, float direction, float speed) {
 		super(x, y, radius);
@@ -101,4 +101,8 @@ public class Agent extends CollidableObject{
     public void setEnergy(float energy) {
         this.energy = energy;
     } 
+    
+    public void setAge(float age) {
+    	this.age = age;
+    }
 }

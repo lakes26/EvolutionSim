@@ -8,16 +8,16 @@ import java.util.Random;
 
 public class Environment {
     private static int foodRadius = 10;
-    private static int numFoodSpawned = 10;
+    private static int numFoodSpawned = 50;
     private static int ticksBetweenFoodSpawn = 50;
-    private static int startingNumAgents = 15;
-    private static int startingNumFood = 60;
+    private static int startingNumAgents = 60;
+    private static int startingNumFood = 120;
     private static int minAgentSize = 5;
     private static int maxAgentSize = 20;
     private static int minAgentSpeed = 1;
     private static int maxAgentSpeed = 10;
     private static float mutationRate = (float) 0.2;
-    private static int maxAge = 200000;
+    private static int maxAge = 2000;
 	private int tickrate, height, width, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 
 	public int getSplitThreshold() {
@@ -40,7 +40,7 @@ public class Environment {
 	    height = 800;
 	    width = 800;
 	    splitThreshold = 3;
-	    deathThreshold = -10;
+	    deathThreshold = -5;
 	    ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
 	}
 	
@@ -53,7 +53,7 @@ public class Environment {
 	    for(int i = 0; i < limit; i++) {
 	        NeuralAgent agent = agentList.get(i);
 	        agent.update(this);
-			//	        for(int f = 0; f < foodList.size(); f++) {
+//	        for(int f = 0; f < foodList.size(); f++) {
 //	            Food food = foodList.get(f);
 //	            if(agent.isCollidingWith(food)) {
 //	                agent.addEnergy(food.getEnergy());
@@ -61,14 +61,14 @@ public class Environment {
 //	                f--;
 //	            }
 //	        }
-	        /*
+	
 	        if(agent.getEnergy() > splitThreshold) {
 	            //100 is spawndistance. probably shouldn't be a literal, but who cares
 	            NeuralAgent newAgent = new NeuralAgent(agent, mutationRate);
 	            toAdd.add(newAgent);
 	            agent.setEnergy(0);
 	        }
-	        */
+	  
 	        if(agent.getEnergy() < deathThreshold || agent.getAge() >= maxAge) {
 	            toRemove.add(i);
 	        }

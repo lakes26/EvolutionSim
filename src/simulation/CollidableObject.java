@@ -3,7 +3,7 @@ package simulation;
 public class CollidableObject {
 	protected float x;
 	protected float y;
-	private float radius;
+	protected float radius;
 	
 	public CollidableObject(float x, float y, float radius) {
 		this.x = x;

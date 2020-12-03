@@ -1,6 +1,10 @@
 package simulation;
 
+import java.util.List;
+
 import graphics.Renderer;
+import utils.Matrix;
+import utils.NeuralNetwork;
 
 public class Main {
 	
@@ -12,7 +16,8 @@ public class Main {
 		Renderer renderer = new Renderer();		
 		renderer.init(env);
 		
-		// render forever
+		
+		//render forever
 		long start_time;
 		while (true) {			
 			// start the timer

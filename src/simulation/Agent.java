@@ -28,19 +28,18 @@ public class Agent extends CollidableObject{
 	    this.age = 0;
 	}
 	
-	
-	public void update(int tickrate, List<Food> food) {
-		Food closestFood = this.findClosestFood(food);
+	public void update(Environment e) {
+		Food closestFood = this.findClosestFood(e.getFood());
 		if(closestFood != null) {
     		this.pointTowards(closestFood);
-    		this.move(tickrate);
+    		this.move(e.getTickrate());
     		this.energy -= speed * 0.01;
     		if(this.isCollidingWith(closestFood)) {
-    			food.remove(closestFood);
+    			e.getFood().remove(closestFood);
     			this.energy += closestFood.getEnergy();
     		}
 		}
-		this.age += 1/tickrate;
+		this.age += 1/e.getTickrate();
 	}
 	
 	public float getEnergy() {
@@ -51,12 +50,26 @@ public class Agent extends CollidableObject{
 		return this.age;
 	}
 
-	private void move(int tickrate) {
+	protected void move(int tickrate) {
 		this.x += Math.sin(this.direction) * this.speed/tickrate;
 		this.y += Math.cos(this.direction) * this.speed/tickrate;
 	}
 	
-	private Food findClosestFood(List<Food> food) {
+	protected void turnLeft() {
+		this.direction -= Math.PI / 64;
+		if(direction <= 0) {
+			direction = (float) (2 * Math.PI);
+		}
+	}
+	
+	protected void turnRight() {
+		this.direction += Math.PI / 64;
+		if(direction >= 2 * Math.PI) {
+			direction = (float) 0;
+		}
+	}
+	
+	protected Food findClosestFood(List<Food> food) {
 		Food closestFood;
 		if(food == null || food.isEmpty()) {
 			return null;
@@ -87,9 +100,5 @@ public class Agent extends CollidableObject{
 
     public void setEnergy(float energy) {
         this.energy = energy;
-    }
-    
-    
-	
-	
+    } 
 }

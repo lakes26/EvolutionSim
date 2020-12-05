@@ -42,38 +42,18 @@ public class Panel extends JPanel{
 		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, this.width, this.height);
 		
-<<<<<<< HEAD
-		// get food and agents from the environment
-		ArrayList<NeuralAgent> agents = environment.getAgents();
-=======
-		/*
-		 * TODO get the agents and foods as 2d arrays from the environment
-		 * environment.getAgentArray
-		 * environment.getFoodArray
-		 */
-		
-		//int[][] agents = {{10, 10}, {100, 200}};
-		//int[][] foods = {{30, 50}, {150, 150}};
 		ArrayList<Agent> agents = environment.getAgents();
->>>>>>> refs/remotes/origin/master
 		ArrayList<Food> foods = environment.getFood();
 		
 		// draw the agents
 		g.setColor(Color.RED);
 		Iterator<Agent> agentIter = agents.iterator();
 		while (agentIter.hasNext()){
-<<<<<<< HEAD
-			NeuralAgent agent = agentIter.next();
+			Agent agent = agentIter.next();
 			int radius = (int) agent.getRadius();
 			
 			g.fillOval((int) (this.scale * (agent.getX() - radius - off_x)), (int) (this.scale * (agent.getY() - radius - off_y)), 
 				       (int) (2 * radius * this.scale), (int) (2 * radius * this.scale));
-=======
-		   Agent agent = agentIter.next();
-		   byte[] DNA = agent.getDNA();
-		   g.setColor(new Color(DNA[0] - Byte.MIN_VALUE, DNA[1] - Byte.MIN_VALUE, DNA[2] - Byte.MIN_VALUE));
-		   g.fillOval((int)agent.getX(), (int)agent.getY(), (int)agent.getRadius() * 2, (int)agent.getRadius() * 2);  // TODO get the correct radius
->>>>>>> refs/remotes/origin/master
 		}
 		
 		// draw the food

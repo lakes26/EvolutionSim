@@ -3,13 +3,17 @@ package graphics;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 
 import input.KeyInput;
+import input.MouseInput;
 import simulation.Environment;
 
 public class Renderer {	
@@ -17,6 +21,8 @@ public class Renderer {
 	private Panel panel;
 	private JFrame frame;	
 	private KeyInput keyInput;
+	private MouseListener mouseListener;
+	private MouseInput mouseInput;
 	
 	public Renderer() {
 
@@ -57,6 +63,8 @@ public class Renderer {
 		// setup the key input
 		this.keyInput = new KeyInput(this.panel);
 		this.panel.addKeyListener(this.keyInput);
+		this.mouseInput = new MouseInput(this.panel);
+		this.panel.addMouseListener(this.mouseInput);
 	}
 	
 	/**

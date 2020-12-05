@@ -44,8 +44,15 @@ public class KeyInput implements KeyListener {
             this.panel.keyAction(KeyEvent.VK_I);
         }
 		
+		if (this.keys[KeyEvent.VK_F]) {
+			this.panel.keyAction(KeyEvent.VK_F);
+		}
+		if (this.keys[KeyEvent.VK_T]) {
+			this.panel.keyAction(KeyEvent.VK_T);
+		}
 	}
 	
+	@Override
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
 		
@@ -53,13 +60,21 @@ public class KeyInput implements KeyListener {
 			System.exit(0);
 		}
 		
-		keys[code] = true;		
+		if (0 <= code && code < 256) {
+			keys[code] = true;		
+		}
 	}
 	
+	@Override
 	public void keyReleased(KeyEvent e) {
-		keys[e.getKeyCode()] = false;
+		int code = e.getKeyCode();
+		
+		if (0 <= code && code < 256) {
+			keys[code] = false;		
+		}
 	}
 	
+	@Override
 	public void keyTyped(KeyEvent e) {
 		
 	}

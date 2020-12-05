@@ -1,6 +1,9 @@
 package simulation;
 
+
 import java.io.Serializable;
+import java.awt.Dimension;
+import java.awt.Point;
 
 public class CollidableObject implements Serializable{
 
@@ -17,6 +20,10 @@ public class CollidableObject implements Serializable{
 	
 	public float getDistance(CollidableObject o) {
 		return (float) Math.sqrt(Math.pow(this.x - o.x, 2) + Math.pow(this.y - o.y, 2));
+	}
+	
+	public float getDistance(@SuppressWarnings("exports") Point p) {
+		return (float) Math.sqrt(Math.pow(this.x - p.x, 2) + Math.pow(this.y - p.y, 2));
 	}
 	
 	/**

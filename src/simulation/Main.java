@@ -35,32 +35,32 @@ public class Main {
 			}
 		}
 
-		// setup the renderer
-		Renderer renderer = new Renderer();		
-		renderer.init(env);
-		
-		//render forever
 
-		long start_time;
-		while (true) {	
-			
-			// start the timer
-			start_time = System.currentTimeMillis();
-			
-			// render the next frame
-			renderer.render();
+        // setup the renderer
+        Renderer renderer= new Renderer();
+        renderer.init(env);
 
-			// wait
-			while (System.currentTimeMillis() - start_time < 1000 / frame_rate) {
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+        // render forever
+        long start_time;
+        while (true) {
 
-					// if sleep is interrupted just close the program stupid java
-					System.exit(1);
-				}
-			}		
-		}
-	}
+            // start the timer
+            start_time= System.currentTimeMillis();
+
+            // render the next frame
+            renderer.render();
+
+            // wait
+            while (System.currentTimeMillis() - start_time < 1000 / frame_rate) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+
+                    // if sleep is interrupted just close the program stupid java
+                    System.exit(1);
+                }
+            }
+        }
+    }
 }

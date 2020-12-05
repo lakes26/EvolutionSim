@@ -1,5 +1,12 @@
 package graphics;
 
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JFrame;
 
 import input.KeyInput;
@@ -21,21 +28,27 @@ public class Renderer {
 	 */
 	
 	public void init(Environment environment) {
-		int width = 1500;
-		int height = 800;
-		
+				
 		this.environment = environment;
 		
-		// create the Panel and JFrame
+		//create the Panel and JFrame
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		int width = d.width;
+		int height = d.height;
+		
 		this.panel = new Panel(environment, width, height);
 		this.frame = new JFrame();
+	
 		
 		// setup the JFrame		
 		this.frame.add(this.panel);		
 		this.frame.setSize(width, height);
-		this.frame.setResizable(false);
+		this.frame.setResizable(true);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.frame.setVisible(true);
+
+		frame.setVisible(true);
+
 		
 		// setup the panel
 		panel.setFocusable(true);

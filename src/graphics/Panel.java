@@ -3,11 +3,14 @@ package graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import input.KeyInput;
 import simulation.Agent;
@@ -27,6 +30,7 @@ public class Panel extends JPanel{
 	
 	public Panel(Environment environment, int width, int height) {
 		this.environment = environment;
+		
 		
 		this.width = width;
 		this.height = height;
@@ -51,7 +55,8 @@ public class Panel extends JPanel{
 		while (agentIter.hasNext()){
 			Agent agent = agentIter.next();
 			int radius = (int) agent.getRadius();
-			
+			byte[] DNA = agent.getDNA();
+			g.setColor(new Color(DNA[0] - Byte.MIN_VALUE, DNA[1] - Byte.MIN_VALUE, DNA[2] - Byte.MIN_VALUE));
 			g.fillOval((int) (this.scale * (agent.getX() - radius - off_x)), (int) (this.scale * (agent.getY() - radius - off_y)), 
 				       (int) (2 * radius * this.scale), (int) (2 * radius * this.scale));
 		}
@@ -92,6 +97,9 @@ public class Panel extends JPanel{
 		}
 		if (action == KeyEvent.VK_M) {
 			this.scale *= 1 - Panel.zoom_speed;
+		}
+		if(action == KeyEvent.VK_Q) {
+			JFrame f1 = (JFrame) SwingUtilities.windowForComponent(this);	
 		}
 	}
 }

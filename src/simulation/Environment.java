@@ -138,4 +138,12 @@ public class Environment {
 	public int getTickrate() {
 		return this.tickrate;
 	}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public int getHeight() {
+		return this.height;
+	}
 }

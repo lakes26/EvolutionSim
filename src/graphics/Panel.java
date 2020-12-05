@@ -1,6 +1,5 @@
 package graphics;
 
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Toolkit;
@@ -20,12 +19,12 @@ import simulation.Food;
 public class Panel extends JPanel{
 	private static final long serialVersionUID = -310866009165515372L;
 
-	private static final double scroll_speed = 10;
-	private static final double zoom_speed = 0.1;
+	private static final double scroll_speed = 20;
+	private static final double zoom_speed = 0.03;
 	
 	private Environment environment;
 
-	private int width, height, off_x, off_y;
+	private int width, height, off_x, off_y, env_width, env_height;
 	private float scale;
 	
 	public Panel(Environment environment, int width, int height) {
@@ -38,10 +37,13 @@ public class Panel extends JPanel{
 		this.scale = (float) 1;
 		this.off_x = 0;
 		this.off_y = 0;
+		
+		this.env_height = this.environment.getHeight();
+		this.env_width = this.environment.getWidth();
 	}
 		
 	@Override
-	public void paintComponent(Graphics g) {			
+	public void paintComponent(Graphics g) {
 		// add the background
 		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, this.width, this.height);
@@ -71,7 +73,9 @@ public class Panel extends JPanel{
 		}
 		
 		// draw the border of the environment
-		// TODO
+		g.setColor(Color.BLACK);
+		g.drawRect((int) (this.scale * -off_x), (int) (this.scale * -off_y), 
+				   (int) (this.scale * this.env_width), (int) (this.scale * this.env_height));
 	}
 	
 	// process a pan or zoom
@@ -89,11 +93,13 @@ public class Panel extends JPanel{
 			this.off_x += Panel.scroll_speed / this.scale;
 		}
 		if (action == KeyEvent.VK_N) {
+			this.off_x += this.width * Panel.zoom_speed / this.scale / 2;
+			this.off_y += this.height * Panel.zoom_speed / this.scale / 2;
 			this.scale *= 1 + Panel.zoom_speed;
-			
-			// TODO zoom to the center
 		}
 		if (action == KeyEvent.VK_M) {
+			this.off_x -= this.width * Panel.zoom_speed / this.scale / 2;
+			this.off_y -= this.height * Panel.zoom_speed / this.scale / 2;
 			this.scale *= 1 - Panel.zoom_speed;
 		}
 		if(action == KeyEvent.VK_Q) {

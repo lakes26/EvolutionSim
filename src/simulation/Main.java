@@ -10,7 +10,7 @@ public class Main {
         Environment env= new Environment();
         env.init();
 
-        int start_ticks= 0;
+        int start_ticks= 1000000;
         int print_every= 10000;
 
         for (int i= 0; i < start_ticks; ++i) {

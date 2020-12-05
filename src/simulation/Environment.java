@@ -9,7 +9,7 @@ import java.util.Random;
 public class Environment {
     private static int foodRadius = 10;
     private static int startingNumFoodSpawned = 60;
-    private static int ticksToDecrementNumFoodSpawned = 20000;
+    private static int ticksToDecrementNumFoodSpawned = 10000;
     private static int minNumFoodSpawned = 40;
     private static int ticksBetweenFoodSpawn = 50;
     private static int startingNumAgents = 30;
@@ -22,16 +22,16 @@ public class Environment {
     private static int maxAge = 800;
     private static int width = 800;
     private static int height = 800;
-    
+
     private long numTicks;
     private int numFoodSpawned;
 
     private int tickrate, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 
-	private ArrayList<Food> foodList;
-	private ArrayList<Agent> agentList;
-	private Random rand;
-	
+    private ArrayList<Food> foodList;
+    private ArrayList<Agent> agentList;
+    private Random rand;
+
     public int getSplitThreshold() {
         return splitThreshold;
     }
@@ -40,17 +40,17 @@ public class Environment {
         this.splitThreshold= splitThreshold;
     }
 
-	public Environment() {
-		numTicks = 0;
-		numFoodSpawned = Environment.startingNumFoodSpawned;
-	    foodList = new ArrayList<Food>();
-	    agentList = new ArrayList<Agent>();
-	    rand = new Random();
-	    tickrate = 1;
-	    splitThreshold = 3;
-	    deathThreshold = -2;
-	    ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
-	}
+    public Environment() {
+        numTicks = 0;
+        numFoodSpawned = Environment.startingNumFoodSpawned;
+        foodList = new ArrayList<>();
+        agentList = new ArrayList<>();
+        rand = new Random();
+        tickrate = 1;
+        splitThreshold = 3;
+        deathThreshold = -2;
+        ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
+    }
 
     public void tick() {
 
@@ -62,14 +62,14 @@ public class Environment {
             Agent agent= agentList.get(i);
             agent.update(this);
 
-//	        for(int f = 0; f < foodList.size(); f++) {
-//	            Food food = foodList.get(f);
-//	            if(agent.isCollidingWith(food)) {
-//	                agent.addEnergy(food.getEnergy());
-//	                foodList.remove(f);
-//	                f--;
-//	            }
-//	        }
+            //	        for(int f = 0; f < foodList.size(); f++) {
+            //	            Food food = foodList.get(f);
+            //	            if(agent.isCollidingWith(food)) {
+            //	                agent.addEnergy(food.getEnergy());
+            //	                foodList.remove(f);
+            //	                f--;
+            //	            }
+            //	        }
 
             if (agent.getEnergy() > splitThreshold) {
                 // 100 is spawndistance. probably shouldn't be a literal, but who cares
@@ -158,7 +158,7 @@ public class Environment {
             averageBurn+= -1 * a.getBurnRate();
         }
         averageBurn= averageBurn / getAgents().size();
-        float foodPerTick= numFoodSpawned / ticksBetweenFoodSpawn;
+        float foodPerTick= (float) numFoodSpawned / (float) ticksBetweenFoodSpawn;
         capacity= foodPerTick / averageBurn;
         return (int) capacity;
     }

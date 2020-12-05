@@ -14,7 +14,7 @@ public class Agent extends CollidableObject{
 	protected byte[] DNA;
 	private boolean add;
 	
-	private static int inputLength = 3;
+	private static int inputLength = 6;
 	private float perceptiveRange;
 	private NeuralNetwork neuralNet;
 	private static Random rand = new Random();
@@ -28,7 +28,7 @@ public class Agent extends CollidableObject{
 		this.energy = 0;
 		this.perceptiveRange = 150;
 		
-		this.neuralNet = new NeuralNetwork(inputLength, 6, 3);
+		this.neuralNet = new NeuralNetwork(inputLength, 6, 6, 3);
 		this.DNA = new byte[3];
 		rand.nextBytes(this.DNA);
 	}
@@ -53,7 +53,7 @@ public class Agent extends CollidableObject{
 	    this.add = agent.add;
 	    this.neuralNet = agent.getNeuralNet().mutate(mutationRate);
 	    this.DNA = agent.mutateDNA();
-	    this.direction = 0;
+	    this.direction = (float) (rand.nextFloat() * 2 * Math.PI);
 	    this.speed = (float) (agent.getSpeed() + mutationRate * new Random().nextGaussian());
 	    this.age = 0;
 	    this.perceptiveRange = 150;
@@ -178,6 +178,10 @@ public class Agent extends CollidableObject{
 				inputArray[2]++;
 			}
 		}
+		inputArray[3] = this.getX()/e.getWidth();
+		inputArray[4] = this.getY()/e.getHeight();
+		inputArray[5] = this.direction;
+		
 		return Matrix.fromArray(inputArray);
 	}
 	

@@ -2,8 +2,11 @@ package graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -26,10 +29,12 @@ public class Panel extends JPanel{
 
 	private int width, height, off_x, off_y, env_width, env_height;
 	private float scale;
+	private Agent selectedAgent;
 	
 	public Panel(Environment environment, int width, int height) {
 		this.environment = environment;
 		
+		this.selectedAgent = null;
 		
 		this.width = width;
 		this.height = height;
@@ -40,6 +45,13 @@ public class Panel extends JPanel{
 		
 		this.env_height = this.environment.getHeight();
 		this.env_width = this.environment.getWidth();
+		
+	}
+	
+	private Point getEnvironmentCoordinates(int x, int y) {
+		Point p = new Point();
+		p.setLocation((x + this.off_x) / this.scale, (y + this.off_y) /this.scale);
+		return p;
 	}
 		
 	@Override
@@ -102,8 +114,10 @@ public class Panel extends JPanel{
 			this.off_y -= this.height * Panel.zoom_speed / this.scale / 2;
 			this.scale *= 1 - Panel.zoom_speed;
 		}
-		if(action == KeyEvent.VK_Q) {
-			JFrame f1 = (JFrame) SwingUtilities.windowForComponent(this);	
-		}
+	}
+
+	public void mouseClicked(int x, int y) {
+		Point enviornmentCoordinates = this.getEnvironmentCoordinates(x, y);
+		
 	}
 }

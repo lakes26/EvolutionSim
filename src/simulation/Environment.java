@@ -8,13 +8,14 @@ import java.util.Random;
 
 public class Environment {
     private static int foodRadius = 10;
-    private static int startingNumFoodSpawned = 80;
-    private static int minNumFoodSpawned = 20;
+    private static int startingNumFoodSpawned = 60;
+    private static int ticksToDecrementNumFoodSpawned = 20000;
+    private static int minNumFoodSpawned = 40;
     private static int ticksBetweenFoodSpawn = 50;
-    private static int startingNumAgents = 10;
-    private static int startingNumFood = 300;
-    private static int minAgentSize = 15;
-    private static int maxAgentSize = 16;
+    private static int startingNumAgents = 300;
+    private static int startingNumFood = 2000;
+    private static int minAgentSize = 14;
+    private static int maxAgentSize = 15;
     private static int minAgentSpeed = 3;
     private static int maxAgentSpeed = 4;
     private static float mutationRate = (float) 0.05;
@@ -94,12 +95,12 @@ public class Environment {
         }
         
         this.numTicks++;
-        if(this.numTicks % 2000 == 0) {
-        	System.out.print(String.format("%d:%d:%d:%d\n", this.numTicks, this.agentList.size(), this.foodList.size(), this.numFoodSpawned));
+        if(this.numTicks % ticksToDecrementNumFoodSpawned == 0) {
+        	//System.out.print(String.format("%d:%d:%d:%d\n", this.numTicks, this.agentList.size(), this.foodList.size(), this.numFoodSpawned));
         	if(this.numFoodSpawned > Environment.minNumFoodSpawned) {
         		this.numFoodSpawned--;
         	}
-        	maxAge++;
+        	//maxAge++;
         }
 	}
 	

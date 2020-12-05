@@ -1,9 +1,12 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class NeuralNetwork {
-	Matrix[] weights;
+public class NeuralNetwork implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+    Matrix[] weights;
 	Matrix[] biases;
 	
 	public NeuralNetwork(int...layers) {

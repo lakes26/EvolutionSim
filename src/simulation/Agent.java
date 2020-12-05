@@ -1,19 +1,21 @@
 package simulation;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
 
 import utils.Matrix;
 import utils.NeuralNetwork;
 
-public class Agent extends CollidableObject {
-    protected float speed;
-    protected float direction;
-    protected float energy;
-    protected float age;
-    protected byte[] DNA;
-    private boolean add;
 
+public class Agent extends CollidableObject implements Serializable{
+    private static final long serialVersionUID = 1L;
+    protected float speed;
+	protected float direction;
+	protected float energy;
+	protected float age;
+	protected byte[] DNA;
+	private boolean add;
     private static int inputLength= 6;
     private float perceptiveRange;
     private float firstRange;

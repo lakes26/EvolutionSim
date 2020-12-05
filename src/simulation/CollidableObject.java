@@ -1,8 +1,13 @@
 package simulation;
 
+
+import java.io.Serializable;
+import java.awt.Dimension;
 import java.awt.Point;
 
-public class CollidableObject {
+public class CollidableObject implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
     protected float x;
     protected float y;
     protected float radius;
@@ -51,4 +56,8 @@ public class CollidableObject {
     public float getRadius() {
         return radius;
     }
+	
+	
+	
+	
 }

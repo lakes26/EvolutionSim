@@ -1,5 +1,12 @@
 package simulation;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -121,35 +128,65 @@ public class Environment {
         float speed= rand.nextInt(maxAgentSpeed - minAgentSpeed) + minAgentSpeed;
         return new Agent(x, y, radius, 0, speed);
     }
+	
+	public void spawnRandomNewFood(int amt) {
+	    for(int i = 0; i < amt; i++) {
+	        float x = rand.nextInt(width);
+	        float y = rand.nextInt(height);
+	        float energy = (float) 1;
+	        foodList.add(new Food(x, y, foodRadius, energy));
+	    }
+	}
+	
+	public void saveToFile(String filename) throws FileNotFoundException, IOException {
+	    File file = new File(filename);
+	    file.delete();
+	    ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(filename));
+	    for(Agent agent: this.agentList) {
+	        objOut.writeObject(agent);
+	    }
+	    for(Food food: this.foodList) {
+	        objOut.writeObject(food);
+	    }
+	}
+	
+	public void loadFromFile(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
+	    ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(filename));
+	    while(true) {
+	        Object obj = null;
+	        try {
+	            obj = objIn.readObject();
+	        } catch(Exception e) {
+	            break;
+	        }
+	        if(obj instanceof Agent) {
+	            agentList.add((Agent) obj);
+	        } else if(obj instanceof Food) {
+	            foodList.add((Food) obj);
+	        }
+	    }
+	}
+	
+	public ArrayList<Agent> getAgents() {
+	    return agentList;
+	}
+	
+	public ArrayList<Food> getFood() {
+	    return foodList;
+	}
+	
+	public int getTickrate() {
+		return this.tickrate;
+	}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public int getHeight() {
+		return this.height;
+	}
 
-    public void spawnRandomNewFood(int amt) {
-        for (int i= 0; i < amt; i++ ) {
-            float x= rand.nextInt(width);
-            float y= rand.nextInt(height);
-            float energy= 1;
-            foodList.add(new Food(x, y, foodRadius, energy));
-        }
-    }
-
-    public ArrayList<Agent> getAgents() {
-        return agentList;
-    }
-
-    public ArrayList<Food> getFood() {
-        return foodList;
-    }
-
-    public int getTickrate() {
-        return tickrate;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
 
     public int getCarryingCapacity() {
         float capacity;

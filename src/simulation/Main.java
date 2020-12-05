@@ -1,28 +1,40 @@
 package simulation;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
 import graphics.Renderer;
 
 public class Main {
-    private static final int frame_rate= 30;
-
-    public static void main(String[] args) {
-        // start the environment
-        Environment env= new Environment();
-        env.init();
-
-        int start_ticks= 1000000;
-        int print_every= 10000;
-
-        for (int i= 0; i < start_ticks; ++i) {
-            env.tick();
-
-            if (i % print_every == 0) {
-                System.out.printf("%d/%d: %d agents, %d food, CC: %d\n", i, start_ticks,
-                    env.getAgents().size(),
-                    env.getFood().size(),
-                    env.getCarryingCapacity());
+	
+	private static final int frame_rate = 30;
+	
+	public static void main(String[] args) {
+		// start the environment
+		Environment env = new Environment();
+		Scanner scnr = new Scanner(System.in);
+		System.out.print("Load from save.txt?: ");
+		if (scnr.nextLine().equalsIgnoreCase("y")) {
+    		try {
+                env.loadFromFile("save.txt");
+            } catch (Exception e1) {
+                e1.printStackTrace();
             }
-        }
+		} else {
+		    env.init();
+		}
+		int start_ticks = 0;
+		int print_every = 100;
+		
+		for(int i = 0; i < start_ticks; ++i) {
+			env.tick();
+			
+			if (i % print_every == 0) {
+				System.out.printf("%d/%d: %d agents, %d food\n", i, start_ticks, env.getAgents().size(),
+  					   		      env.getFood().size());
+			}
+		}
+
 
         // setup the renderer
         Renderer renderer= new Renderer();

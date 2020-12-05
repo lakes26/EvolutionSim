@@ -6,6 +6,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.SystemFlavorMap;
 import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -172,6 +174,14 @@ public class Panel extends JPanel{
 		// set mode to tracking
 		if (action == KeyEvent.VK_T) {
 			this.mode = Panel.MODE_TRACK;
+		}
+		if(action == KeyEvent.VK_I) {
+		    try {
+		        System.out.println("test");
+                this.environment.saveToFile("save.txt");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
 		}
 	}
 

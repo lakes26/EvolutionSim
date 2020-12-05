@@ -1,11 +1,14 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Matrix {
-	private int M;
+public class Matrix implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+    private int M;
 	private int N;
 	private float[][] data;
 

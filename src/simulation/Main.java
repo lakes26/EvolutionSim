@@ -11,14 +11,25 @@ public class Main {
 	private static final int frame_rate = 30;
 	
 	public static void main(String[] args) {
+		// start the environment
 		Environment env = new Environment();
 		env.init();
-		for(int i = 0; i < 300000; i++) {
+		
+		int start_ticks = 0;
+		int print_every = 100;
+		
+		for(int i = 0; i < start_ticks; ++i) {
 			env.tick();
+			
+			if (i % print_every == 0) {
+				System.out.printf("%d/%d: %d agents, %d food\n", i, start_ticks, env.getAgents().size(),
+  					   		      env.getFood().size());
+			}
 		}
+		
+		// setup the renderer
 		Renderer renderer = new Renderer();		
 		renderer.init(env);
-		
 		
 		//render forever
 		long start_time;

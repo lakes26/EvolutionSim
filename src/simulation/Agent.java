@@ -18,7 +18,7 @@ public class Agent extends CollidableObject {
     private float perceptiveRange;
     private float firstRange;
     private NeuralNetwork neuralNet;
-    private static Random rand = new Random();
+    private static Random rand= new Random();
 
     public Agent(float x, float y, float radius, float direction, float speed) {
         super(x, y, radius);
@@ -86,7 +86,7 @@ public class Agent extends CollidableObject {
             turnRight();
         }
         move(e.getTickrate(), 1);
-        addEnergy((float) (-getSpeed() * 0.002 * Math.log(getRadius())));
+        addEnergy(getBurnRate());
 
         Food closestFood= findClosestFood(e.getFood());
         if (closestFood != null) {
@@ -227,6 +227,10 @@ public class Agent extends CollidableObject {
 
     public void setSpeed(int speed) {
         this.speed= speed;
-
     }
+
+    public float getBurnRate() {
+        return (float) (-getSpeed() * 0.002 * Math.log(getRadius()));
+    }
+
 }

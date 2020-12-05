@@ -20,6 +20,8 @@ public class Agent extends CollidableObject {
     private NeuralNetwork neuralNet;
     private static Random rand = new Random();
 
+    private long id;
+    
     public Agent(float x, float y, float radius, float direction, float speed) {
         super(x, y, radius);
         add= rand.nextBoolean();
@@ -32,6 +34,8 @@ public class Agent extends CollidableObject {
         neuralNet= new NeuralNetwork(inputLength, 6, 3);
         DNA= new byte[3];
         rand.nextBytes(DNA);
+        
+        this.generateID();
     }
 
     /** Creates a duplicate of given agent, spawned a given distance from it's original
@@ -59,8 +63,15 @@ public class Agent extends CollidableObject {
         age= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;
+        
+        this.generateID();
     }
 
+    private void generateID() {
+    	Random rand = new Random();
+        this.id = Math.abs(rand.nextLong());
+    }
+    
     private NeuralNetwork getNeuralNet() {
         return neuralNet;
     }
@@ -179,24 +190,22 @@ public class Agent extends CollidableObject {
                 inputArray[0]++ ;
             } else if (getDistance(food) <= firstRange && angle <= direction - Math.PI / 12 &&
                 angle <= direction - 3 * Math.PI / 12) {
-                    inputArray[1]++ ;
-                } else
-                if (getDistance(food) <= firstRange && angle <= direction + 3 * Math.PI / 12 &&
-                    angle >= direction + Math.PI / 12) {
-                        inputArray[2]++ ;
-                    } else
-                    if (getDistance(food) <= perceptiveRange && angle <= direction + Math.PI / 12 &&
-                        angle >= direction - Math.PI / 12) {
-                            inputArray[3]++ ;
-                        } else if (getDistance(food) <= perceptiveRange &&
-                            angle <= direction - Math.PI / 12 &&
-                            angle <= direction - 3 * Math.PI / 12) {
-                                inputArray[4]++ ;
-                            } else if (getDistance(food) <= perceptiveRange &&
-                                angle <= direction + 3 * Math.PI / 12 &&
-                                angle >= direction + Math.PI / 12) {
-                                    inputArray[5]++ ;
-                                }
+                inputArray[1]++ ;
+            } else if (getDistance(food) <= firstRange && angle <= direction + 3 * Math.PI / 12 &&
+                angle >= direction + Math.PI / 12) {
+                inputArray[2]++ ;
+            } else if (getDistance(food) <= perceptiveRange && angle <= direction + Math.PI / 12 &&
+                angle >= direction - Math.PI / 12) {
+                inputArray[3]++ ;
+            } else if (getDistance(food) <= perceptiveRange &&
+                angle <= direction - Math.PI / 12 &&
+                angle <= direction - 3 * Math.PI / 12) {
+                inputArray[4]++ ;
+            } else if (getDistance(food) <= perceptiveRange &&
+                angle <= direction + 3 * Math.PI / 12 &&
+                angle >= direction + Math.PI / 12) {
+                inputArray[5]++ ;
+            }
         }
         return Matrix.fromArray(inputArray);
     }
@@ -227,6 +236,9 @@ public class Agent extends CollidableObject {
 
     public void setSpeed(int speed) {
         this.speed= speed;
-
+    }
+    
+    public long getID() {
+    	return this.id;
     }
 }

@@ -12,18 +12,20 @@ public class Environment {
     private static int ticksToDecrementNumFoodSpawned = 20000;
     private static int minNumFoodSpawned = 40;
     private static int ticksBetweenFoodSpawn = 50;
-    private static int startingNumAgents = 300;
-    private static int startingNumFood = 2000;
+    private static int startingNumAgents = 30;
+    private static int startingNumFood = 200;
     private static int minAgentSize = 14;
     private static int maxAgentSize = 15;
     private static int minAgentSpeed = 3;
     private static int maxAgentSpeed = 4;
     private static float mutationRate = (float) 0.05;
     private static int maxAge = 800;
+    private static int width = 800;
+    private static int height = 800;
     
     private long numTicks;
     private int numFoodSpawned;
-	private int tickrate, height, width, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
+	private int tickrate, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 
 	public int getSplitThreshold() {
 		return splitThreshold;
@@ -44,8 +46,6 @@ public class Environment {
 	    agentList = new ArrayList<Agent>();
 	    rand = new Random();
 	    tickrate = 1;
-	    height = 800;
-	    width = 800;
 	    splitThreshold = 3;
 	    deathThreshold = -2;
 	    ticksUntilFoodSpawn = ticksBetweenFoodSpawn;

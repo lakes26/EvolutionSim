@@ -8,16 +8,20 @@ import java.util.Random;
 
 public class Environment {
     private static int foodRadius = 10;
-    private static int numFoodSpawned = 40;
+    private static int startingNumFoodSpawned = 80;
+    private static int minNumFoodSpawned = 20;
     private static int ticksBetweenFoodSpawn = 50;
-    private static int startingNumAgents = 300;
-    private static int startingNumFood = 160;
-    private static int minAgentSize = 5;
-    private static int maxAgentSize = 20;
-    private static int minAgentSpeed = 1;
-    private static int maxAgentSpeed = 10;
+    private static int startingNumAgents = 10;
+    private static int startingNumFood = 300;
+    private static int minAgentSize = 15;
+    private static int maxAgentSize = 16;
+    private static int minAgentSpeed = 3;
+    private static int maxAgentSpeed = 4;
     private static float mutationRate = (float) 0.05;
     private static int maxAge = 800;
+    
+    private long numTicks;
+    private int numFoodSpawned;
 	private int tickrate, height, width, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 
 	public int getSplitThreshold() {
@@ -29,12 +33,14 @@ public class Environment {
 	}
 
 	private ArrayList<Food> foodList;
-	private ArrayList<NeuralAgent> agentList;
+	private ArrayList<Agent> agentList;
 	private Random rand;
 	
 	public Environment() {
+		numTicks = 0;
+		numFoodSpawned = Environment.startingNumFoodSpawned;
 	    foodList = new ArrayList<Food>();
-	    agentList = new ArrayList<NeuralAgent>();
+	    agentList = new ArrayList<Agent>();
 	    rand = new Random();
 	    tickrate = 1;
 	    height = 800;
@@ -47,11 +53,11 @@ public class Environment {
 	public void tick() {
 		
 		PriorityQueue<Integer> toRemove = new PriorityQueue<>(100, Collections.reverseOrder());
-		List<NeuralAgent> toAdd = new ArrayList<>();
+		List<Agent> toAdd = new ArrayList<>();
 		
 		int limit = agentList.size();
 	    for(int i = 0; i < limit; i++) {
-	        NeuralAgent agent = agentList.get(i);
+	        Agent agent = agentList.get(i);
 	        agent.update(this);
 //	        for(int f = 0; f < foodList.size(); f++) {
 //	            Food food = foodList.get(f);
@@ -64,7 +70,8 @@ public class Environment {
 	
 	        if(agent.getEnergy() > splitThreshold) {
 	            //100 is spawndistance. probably shouldn't be a literal, but who cares
-	            NeuralAgent newAgent = new NeuralAgent(agent, mutationRate);
+	            Agent newAgent = new Agent(agent, mutationRate);
+	            newAgent.setSpeed(Environment.minAgentSpeed);
 	            toAdd.add(newAgent);
 	            agent.setEnergy(0);
 	        }
@@ -85,6 +92,15 @@ public class Environment {
             spawnRandomNewFood(numFoodSpawned);
             ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
         }
+        
+        this.numTicks++;
+        if(this.numTicks % 2000 == 0) {
+        	System.out.print(String.format("%d:%d:%d:%d\n", this.numTicks, this.agentList.size(), this.foodList.size(), this.numFoodSpawned));
+        	if(this.numFoodSpawned > Environment.minNumFoodSpawned) {
+        		this.numFoodSpawned--;
+        	}
+        	maxAge++;
+        }
 	}
 	
 	public void init() {
@@ -94,12 +110,12 @@ public class Environment {
 	    spawnRandomNewFood(startingNumFood);
 	}
 	
-	public NeuralAgent createRandomAgent() {
+	public Agent createRandomAgent() {
 	    float x = rand.nextInt(width);
         float y = rand.nextInt(height);
         float radius = rand.nextInt(maxAgentSize - minAgentSize) + minAgentSize;
         float speed = rand.nextInt(maxAgentSpeed - minAgentSpeed) + minAgentSpeed;
-        return new NeuralAgent(x, y, radius, 0, speed);
+        return new Agent(x, y, radius, 0, speed);
     }
 	
 	public void spawnRandomNewFood(int amt) {
@@ -111,7 +127,7 @@ public class Environment {
 	    }
 	}
 	
-	public ArrayList<NeuralAgent> getAgents() {
+	public ArrayList<Agent> getAgents() {
 	    return agentList;
 	}
 	

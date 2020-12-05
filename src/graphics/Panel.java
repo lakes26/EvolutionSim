@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import simulation.Agent;
 import simulation.Environment;
 import simulation.Food;
-import simulation.NeuralAgent;
 
 public class Panel extends JPanel{
 	private static final long serialVersionUID = -310866009165515372L;
@@ -40,14 +39,16 @@ public class Panel extends JPanel{
 		
 		//int[][] agents = {{10, 10}, {100, 200}};
 		//int[][] foods = {{30, 50}, {150, 150}};
-		ArrayList<NeuralAgent> agents = environment.getAgents();
+		ArrayList<Agent> agents = environment.getAgents();
 		ArrayList<Food> foods = environment.getFood();
 		
 		// draw the agents
 		g.setColor(Color.RED);
-		Iterator<NeuralAgent> agentIter = agents.iterator();
+		Iterator<Agent> agentIter = agents.iterator();
 		while (agentIter.hasNext()){
-		   NeuralAgent agent = agentIter.next();
+		   Agent agent = agentIter.next();
+		   byte[] DNA = agent.getDNA();
+		   g.setColor(new Color(DNA[0] - Byte.MIN_VALUE, DNA[1] - Byte.MIN_VALUE, DNA[2] - Byte.MIN_VALUE));
 		   g.fillOval((int)agent.getX(), (int)agent.getY(), (int)agent.getRadius() * 2, (int)agent.getRadius() * 2);  // TODO get the correct radius
 		}
 		

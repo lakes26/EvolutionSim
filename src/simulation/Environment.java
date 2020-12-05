@@ -11,13 +11,13 @@ public class Environment {
     private static int numFoodSpawned = 40;
     private static int ticksBetweenFoodSpawn = 50;
     private static int startingNumAgents = 300;
-    private static int startingNumFood = 120;
+    private static int startingNumFood = 160;
     private static int minAgentSize = 5;
     private static int maxAgentSize = 20;
     private static int minAgentSpeed = 1;
     private static int maxAgentSpeed = 10;
     private static float mutationRate = (float) 0.05;
-    private static int maxAge = 2000;
+    private static int maxAge = 800;
 	private int tickrate, height, width, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 
 	public int getSplitThreshold() {

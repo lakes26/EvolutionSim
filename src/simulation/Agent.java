@@ -32,7 +32,7 @@ public class Agent extends CollidableObject{
 		Food closestFood = this.findClosestFood(e.getFood());
 		if(closestFood != null) {
     		this.pointTowards(closestFood);
-    		this.move(e.getTickrate());
+    		this.move(e.getTickrate(), 1);
     		this.energy -= speed * 0.01;
     		if(this.isCollidingWith(closestFood)) {
     			e.getFood().remove(closestFood);
@@ -50,9 +50,9 @@ public class Agent extends CollidableObject{
 		return this.age;
 	}
 
-	protected void move(int tickrate) {
-		this.x += Math.sin(this.direction) * this.speed/tickrate;
-		this.y += Math.cos(this.direction) * this.speed/tickrate;
+	protected void move(int tickrate, float steps) {
+		this.x += Math.sin(this.direction) * this.speed/tickrate * steps;
+		this.y += Math.cos(this.direction) * this.speed/tickrate * steps;
 	}
 	
 	protected void turnLeft() {

@@ -1,6 +1,7 @@
 package simulation;
 
 import java.util.List;
+import java.util.Random;
 
 import utils.Matrix;
 import utils.NeuralNetwork;
@@ -10,6 +11,7 @@ public class NeuralAgent extends Agent {
 	private static int inputLength = 8;
 	private float perceptiveRange;
 	private NeuralNetwork neuralNet;
+	static Random rand = new Random();
 	
 	public NeuralAgent(float x, float y, float radius, float direction, float speed) {
 		super(x, y, radius, direction, speed);
@@ -20,7 +22,7 @@ public class NeuralAgent extends Agent {
 	}
 
 	public NeuralAgent(NeuralAgent a, float mutationRate) {
-		super(a.x + 100, a.y + 100, a.radius, 0, a.speed);
+		super(a.x + (float) rand.nextFloat() * 200 - 100, a.y + (float) rand.nextFloat() * 200 - 100, a.radius, 0, a.speed);
 		this.neuralNet = a.neuralNet.mutate(mutationRate);
 		this.energy = 0;
 		this.age = 0;
@@ -87,13 +89,13 @@ public class NeuralAgent extends Agent {
 		if(maxIndex == 0) {
 			this.turnLeft();
 		} else if(maxIndex == 1) {
-			this.move(e.getTickrate());
+			this.move(e.getTickrate(), 1);
 			this.addEnergy((float) (-this.getSpeed() * 0.005));
 		} else {
 			this.turnRight();
 		}
-		//this.move(e.getTickrate());
-		//this.addEnergy((float) (-this.getSpeed() * 0.005));
+		this.move(e.getTickrate(), (float) 0.1);
+		this.addEnergy((float) (-this.getSpeed() * 0.005 * 0.1));
 		
 		Food closestFood = this.findClosestFood(e.getFood());
 		if(closestFood != null) {

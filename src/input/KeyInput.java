@@ -40,6 +40,10 @@ public class KeyInput implements KeyListener {
 		if (this.keys[KeyEvent.VK_M]) {
 			this.panel.keyAction(KeyEvent.VK_M);
 		}
+		if (this.keys[KeyEvent.VK_I]) {
+            this.panel.keyAction(KeyEvent.VK_I);
+        }
+		
 	}
 	
 	public void keyPressed(KeyEvent e) {

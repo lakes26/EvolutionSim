@@ -1,5 +1,12 @@
 package simulation;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -124,6 +131,35 @@ public class Environment {
 	        float y = rand.nextInt(height);
 	        float energy = (float) 1;
 	        foodList.add(new Food(x, y, foodRadius, energy));
+	    }
+	}
+	
+	public void saveToFile(String filename) throws FileNotFoundException, IOException {
+	    File file = new File(filename);
+	    file.delete();
+	    ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(filename));
+	    for(Agent agent: this.agentList) {
+	        objOut.writeObject(agent);
+	    }
+	    for(Food food: this.foodList) {
+	        objOut.writeObject(food);
+	    }
+	}
+	
+	public void loadFromFile(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
+	    ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(filename));
+	    while(true) {
+	        Object obj = null;
+	        try {
+	            obj = objIn.readObject();
+	        } catch(Exception e) {
+	            break;
+	        }
+	        if(obj instanceof Agent) {
+	            agentList.add((Agent) obj);
+	        } else if(obj instanceof Food) {
+	            foodList.add((Food) obj);
+	        }
 	    }
 	}
 	

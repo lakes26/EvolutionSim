@@ -1,7 +1,11 @@
 package simulation;
 
-public class CollidableObject {
-	protected float x;
+import java.io.Serializable;
+
+public class CollidableObject implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+    protected float x;
 	protected float y;
 	protected float radius;
 	

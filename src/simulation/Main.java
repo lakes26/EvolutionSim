@@ -1,5 +1,8 @@
 package simulation;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
 import graphics.Renderer;
 
 public class Main {
@@ -9,8 +12,17 @@ public class Main {
 	public static void main(String[] args) {
 		// start the environment
 		Environment env = new Environment();
-		env.init();
-		
+		Scanner scnr = new Scanner(System.in);
+		System.out.print("Load from save.txt?: ");
+		if (scnr.nextLine().equalsIgnoreCase("y")) {
+    		try {
+                env.loadFromFile("save.txt");
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+		} else {
+		    env.init();
+		}
 		int start_ticks = 0;
 		int print_every = 100;
 		

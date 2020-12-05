@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -104,6 +106,14 @@ public class Panel extends JPanel{
 		}
 		if(action == KeyEvent.VK_Q) {
 			JFrame f1 = (JFrame) SwingUtilities.windowForComponent(this);	
+		}
+		if(action == KeyEvent.VK_I) {
+		    try {
+		        System.out.println("test");
+                this.environment.saveToFile("save.txt");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
 		}
 	}
 }

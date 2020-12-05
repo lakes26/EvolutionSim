@@ -28,6 +28,10 @@ public class CollidableObject {
 			return false;
 		}
 	}
+	
+	protected float angleBetween(CollidableObject o) {
+		return (float) Math.atan2(o.x - this.x, o.y - this.y);
+	}
 
     public float getX() {
         return x;

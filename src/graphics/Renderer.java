@@ -60,6 +60,9 @@ public class Renderer {
 		this.panel.repaint();
 	}
 	
-	
+	@SuppressWarnings("exports")
+	public JFrame getFrame() {
+		return frame;
+	}
 	
 }

@@ -56,12 +56,18 @@ public class KeyInput implements KeyListener {
 			System.exit(0);
 		}
 		
-		keys[code] = true;		
+		if (0 <= code && code < 256) {
+			keys[code] = true;		
+		}
 	}
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
-		keys[e.getKeyCode()] = false;
+		int code = e.getKeyCode();
+		
+		if (0 <= code && code < 256) {
+			keys[code] = false;		
+		}
 	}
 	
 	@Override

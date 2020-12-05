@@ -102,7 +102,6 @@ public class Panel extends JPanel{
 			}
 			
 			if (dead) {
-				this.mode = Panel.MODE_FREE;
 				this.track_id = -1;
 			}
 		}

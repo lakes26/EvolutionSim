@@ -49,9 +49,8 @@ public class Panel extends JPanel{
 		
 		// draw the agents
 		g.setColor(Color.RED);
-		Iterator<Agent> agentIter = agents.iterator();
-		while (agentIter.hasNext()){
-			Agent agent = agentIter.next();
+		for(int i = 0; i < agents.size(); i++){
+			Agent agent = agents.get(i);
 			int radius = (int) agent.getRadius();
 			
 			g.fillOval((int) (this.scale * (agent.getX() - radius - off_x)), (int) (this.scale * (agent.getY() - radius - off_y)), 
@@ -60,9 +59,8 @@ public class Panel extends JPanel{
 		
 		// draw the food
 		g.setColor(Color.BLUE);
-		Iterator<Food> foodIter = foods.iterator();
-		while (foodIter.hasNext()){
-			Food food = foodIter.next();
+		for(int i = 0; i < foods.size(); i++){
+			Food food = foods.get(i);
 			int radius = (int) food.getRadius();
 			
 			g.fillOval((int) (this.scale * (food.getX() - radius - off_x)), (int) (this.scale * (food.getY() - radius - off_y)), 

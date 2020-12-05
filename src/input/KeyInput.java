@@ -43,7 +43,13 @@ public class KeyInput implements KeyListener {
 	}
 	
 	public void keyPressed(KeyEvent e) {
-		keys[e.getKeyCode()] = true;
+		int code = e.getKeyCode();
+		
+		if (code == KeyEvent.VK_ESCAPE) {
+			System.exit(0);
+		}
+		
+		keys[code] = true;		
 	}
 	
 	public void keyReleased(KeyEvent e) {

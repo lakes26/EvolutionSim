@@ -21,6 +21,7 @@ public class Agent extends CollidableObject implements Serializable{
     private float firstRange;
     private NeuralNetwork neuralNet;
     private static Random rand= new Random();
+    private int numOffspring;
 
     private long id;
 
@@ -36,6 +37,7 @@ public class Agent extends CollidableObject implements Serializable{
         neuralNet= new NeuralNetwork(inputLength, 6, 3);
         DNA= new byte[3];
         rand.nextBytes(DNA);
+        this.numOffspring = 0;
 
         generateID();
     }
@@ -65,6 +67,9 @@ public class Agent extends CollidableObject implements Serializable{
         age= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;
+        
+        agent.numOffspring++;
+        this.numOffspring = 0;
 
         generateID();
     }
@@ -107,10 +112,10 @@ public class Agent extends CollidableObject implements Serializable{
         if (closestFood != null) {
             if (isCollidingWith(closestFood)) {
                 e.getFood().remove(closestFood);
-                energy+= closestFood.getEnergy();
+                energy += closestFood.getEnergy();
             }
         }
-        age= 1 / e.getTickrate();
+        age += ((float) 1) / e.getTickrate();
     }
 
     public float getEnergy() {
@@ -122,8 +127,8 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     protected void move(int tickrate, float steps) {
-        x+= Math.cos(direction) * speed / tickrate * steps;
-        y+= Math.sin(direction) * speed / tickrate * steps;
+        x += Math.cos(direction) * speed / tickrate * steps;
+        y += Math.sin(direction) * speed / tickrate * steps;
         keepInBounds();
     }
 
@@ -164,7 +169,7 @@ public class Agent extends CollidableObject implements Serializable{
 
     private byte[] mutateDNA() {
         byte[] mutatedDNA= new byte[DNA.length];
-        int mutationRate= 3;
+        int mutationRate= 10;
         for (int i= 0; i < DNA.length; i++ ) {
             if (add) {
                 if (DNA[i] >= Byte.MAX_VALUE - mutationRate) {
@@ -247,5 +252,9 @@ public class Agent extends CollidableObject implements Serializable{
     public float getBurnRate() {
         return (float) (-getSpeed() * 0.002 * Math.log(getRadius()));
     }
+
+	public int getNumOffspring() {
+		return this.numOffspring;
+	}
 
 }

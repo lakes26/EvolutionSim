@@ -22,7 +22,11 @@ public class Main {
         } else {
             env.init();
         }
+<<<<<<< HEAD
         int start_ticks = 2000;
+=======
+        int start_ticks = 0;
+>>>>>>> stash
         int print_every = 1000;
 
         for(int i = 0; i < start_ticks; ++i) {

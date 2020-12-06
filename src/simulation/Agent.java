@@ -31,7 +31,7 @@ public class Agent extends CollidableObject implements Serializable{
         this.speed= speed;
         age= 0;
         energy= 0;
-        perceptiveRange= 150;
+        perceptiveRange= 100;
         firstRange= perceptiveRange / 2;
         neuralNet= new NeuralNetwork(inputLength, 6, 3);
         DNA= new byte[3];
@@ -98,7 +98,8 @@ public class Agent extends CollidableObject implements Serializable{
         } else {
             turnRight();
         }
-        direction = (float) Math.min(Math.max(direction, 0), 2*Math.PI);
+        direction = normalizeDirection(direction);
+
 
         move(e.getTickrate(), 1);
         addEnergy(getBurnRate());
@@ -122,8 +123,8 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     protected void move(int tickrate, float steps) {
-        x+= Math.cos(direction) * speed / tickrate * steps;
-        y+= Math.sin(direction) * speed / tickrate * steps;
+        x+= Math.sin(direction) * speed / tickrate * steps;
+        y+= Math.cos(direction) * speed / tickrate * steps;
         keepInBounds();
     }
 
@@ -134,16 +135,10 @@ public class Agent extends CollidableObject implements Serializable{
 
     protected void turnLeft() {
         direction += Math.PI / 64;
-        if (direction >= 2*Math.PI) {
-            direction= (float) (direction - 2 * Math.PI);
-        }
     }
 
     protected void turnRight() {
         direction -= Math.PI / 64;
-        if (direction <= 0) {
-            direction = (float) (direction + 2*Math.PI);
-        }
     }
 
     protected Food findClosestFood(List<Food> food) {
@@ -188,8 +183,8 @@ public class Agent extends CollidableObject implements Serializable{
     private Matrix pollEnvironment(Environment e) {
         float[] inputArray= new float[inputLength];
         for (Food food : e.getFood()) {
-            float dir = directionOf(food);
-            float angle = direction-dir;
+            float dir = normalizeDirection(directionOf(food));
+            float angle = normalizeDirection(direction-dir);
             if (getDistance(food) <= firstRange && angle < Math.PI / 12 && angle > -Math.PI / 12 ) {
                 inputArray[0]++ ;
             } else if (getDistance(food) <= firstRange && angle >= Math.PI / 12 &&
@@ -247,5 +242,7 @@ public class Agent extends CollidableObject implements Serializable{
     public float getBurnRate() {
         return (float) (-getSpeed() * 0.002 * Math.log(getRadius()));
     }
+
+
 
 }

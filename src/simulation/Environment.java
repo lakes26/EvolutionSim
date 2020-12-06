@@ -19,7 +19,7 @@ public class Environment {
     private static int ticksToDecrementNumFoodSpawned = 10000;
     private static int minNumFoodSpawned = 40;
     private static int ticksBetweenFoodSpawn = 50;
-    private static int startingNumAgents = 30;
+    private static int startingNumAgents = 60;
     private static int startingNumFood = 200;
     private static int minAgentSize = 14;
     private static int maxAgentSize = 15;
@@ -68,9 +68,6 @@ public class Environment {
         for (int i= 0; i < limit; i++ ) {
             Agent agent= agentList.get(i);
             agent.update(this);
-            if (agent.direction > 2*Math.PI+.01||agent.direction<0) {
-                System.out.println(agent.direction);
-            }
 
             //	        for(int f = 0; f < foodList.size(); f++) {
             //	            Food food = foodList.get(f);

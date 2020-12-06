@@ -22,8 +22,8 @@ public class Main {
         } else {
             env.init();
         }
-        int start_ticks = 25000;
-        int print_every = 1000;
+        int start_ticks = 1000000;
+        int print_every = 10000;
 
         for(int i = 0; i < start_ticks; ++i) {
             env.tick();

@@ -1,12 +1,11 @@
 package simulation;
 
 
-import java.io.Serializable;
-import java.awt.Dimension;
 import java.awt.Point;
+import java.io.Serializable;
 
 public class CollidableObject implements Serializable{
-    
+
     private static final long serialVersionUID = 1L;
     protected float x;
     protected float y;
@@ -42,7 +41,7 @@ public class CollidableObject implements Serializable{
 
     protected float directionOf(CollidableObject o) {
         float angle = (float) Math.atan2(o.x - x, o.y - y);
-        return angle;
+        return normalizeDirection(angle);
     }
 
     public float getX() {
@@ -56,8 +55,21 @@ public class CollidableObject implements Serializable{
     public float getRadius() {
         return radius;
     }
-	
-	
-	
-	
+
+    public static float normalizeDirection(float direction) {
+        if (direction > -Math.PI && direction < Math.PI) {
+            return direction;
+        }
+        if (direction < -Math.PI) {
+            direction += 2*Math.PI;
+            direction = normalizeDirection(direction);
+        }else if (direction > Math.PI) {
+            direction -= 2*Math.PI;
+            direction = normalizeDirection(direction);
+        }
+        return direction;
+    }
+
+
+
 }

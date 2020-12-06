@@ -139,7 +139,6 @@ public class Panel extends JPanel{
 		String info_text = this.mode == Panel.MODE_FREE ? "mode: free" : "mode: tracking";
 		g.setColor(Color.BLACK);
 		g.drawString(info_text, 5, 15);
-<<<<<<< HEAD
 		
 		//draw save indicator
 		if(this.saveIndCountdown > 0) {
@@ -147,7 +146,8 @@ public class Panel extends JPanel{
 		    g.setFont(new Font("TimesNewRoman", Font.BOLD, 40));
 		    g.drawString("Saving...", width - 200, height - 100);
 		    saveIndCountdown--;
-=======
+		}
+		
 		if(selectedAgent != null && track_id != -1) {
 			String age = String.format("age: %f", selectedAgent.getAge());
 			String speed = String.format("speed: %.2f", selectedAgent.getSpeed());
@@ -160,7 +160,6 @@ public class Panel extends JPanel{
 			g.setFont(new Font("TimesNewRoman", Font.PLAIN, 16));
 			g.drawString(energy, 5, 60);
 			
->>>>>>> stash
 		}
 	}
 	

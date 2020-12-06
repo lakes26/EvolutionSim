@@ -23,14 +23,14 @@ public class Main {
             env.init();
         }
         int start_ticks = 10000;
-        int print_every = 1000;
+        int print_every = 10000;
 
         for(int i = 0; i < start_ticks; ++i) {
             env.tick();
 
             if (i % print_every == 0) {
-                System.out.printf("%d/%d: %d agents, %d food CC: %d\n ", i, start_ticks, env.getAgents().size(),
-                    env.getFood().size(), env.getCarryingCapacity());
+                System.out.printf("%d/%d: %d agents, %d food CC: %d Generation: %d\n ", i, start_ticks, env.getAgents().size(),
+                    env.getFood().size(), env.getCarryingCapacity(), env.averageGeneration());
             }
         }
 

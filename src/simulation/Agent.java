@@ -22,7 +22,7 @@ public class Agent extends CollidableObject implements Serializable{
     private NeuralNetwork neuralNet;
     private static Random rand= new Random();
     private int numOffspring;
-
+    private int generation;
     private long id;
 
     public Agent(float x, float y, float radius, float direction, float speed) {
@@ -37,8 +37,8 @@ public class Agent extends CollidableObject implements Serializable{
         neuralNet= new NeuralNetwork(inputLength, 6, 3);
         DNA= new byte[3];
         rand.nextBytes(DNA);
-        this.numOffspring = 0;
-
+        numOffspring = 0;
+        generation = 0;
         generateID();
     }
 
@@ -67,9 +67,9 @@ public class Agent extends CollidableObject implements Serializable{
         age= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;
-        
+        generation = agent.generation + 1;
         agent.numOffspring++;
-        this.numOffspring = 0;
+        numOffspring = 0;
 
         generateID();
     }
@@ -116,7 +116,7 @@ public class Agent extends CollidableObject implements Serializable{
                 energy+= closestFood.getEnergy();
             }
         }
-        age += ((float) 1) / e.getTickrate();
+        age += (float) 1 / e.getTickrate();
     }
 
     public float getEnergy() {
@@ -248,8 +248,11 @@ public class Agent extends CollidableObject implements Serializable{
         return (float) (-getSpeed() * 0.002 * Math.log(getRadius()));
     }
 
-	public int getNumOffspring() {
-		return this.numOffspring;
-	}
+    public int getNumOffspring() {
+        return numOffspring;
+    }
 
+    public int getGeneration() {
+        return generation;
+    }
 }

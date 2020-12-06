@@ -30,7 +30,7 @@ public class StatisticPanel {
 		
 		returnList.add(this.panel.getMode() == Panel.getModeFree() ? "mode: free" : "mode: tracking");
 		
-		if(agent != null) {
+		if(agent != null && this.panel.getTrackingID() != -1) {
 			returnList.add(String.format("age: %f", agent.getAge()));
 			returnList.add(String.format("speed: %.2f", agent.getSpeed()));
 			returnList.add(String.format("number of offspring: %d", agent.getNumOffspring()));

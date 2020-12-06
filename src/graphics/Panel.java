@@ -41,6 +41,7 @@ public class Panel extends JPanel{
 	private long track_id;
 
 	private StatisticPanel statisticPanel;
+
 	
 	public Panel(Environment environment, int width, int height) {
 		this.environment = environment;
@@ -227,5 +228,9 @@ public class Panel extends JPanel{
 
 	public static int getModeFree() {
 		return MODE_FREE;
+	}
+
+	public long getTrackingID() {
+		return this.track_id;
 	}
 }

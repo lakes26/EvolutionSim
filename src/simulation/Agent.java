@@ -11,11 +11,11 @@ import utils.NeuralNetwork;
 public class Agent extends CollidableObject implements Serializable{
     private static final long serialVersionUID = 1L;
     protected float speed;
-	protected float direction;
-	protected float energy;
-	protected float age;
-	protected byte[] DNA;
-	private boolean add;
+    protected float direction;
+    protected float energy;
+    protected float age;
+    protected byte[] DNA;
+    private boolean add;
     private static int inputLength= 6;
     private float perceptiveRange;
     private float firstRange;
@@ -98,6 +98,8 @@ public class Agent extends CollidableObject implements Serializable{
         } else {
             turnRight();
         }
+        direction = (float) Math.min(Math.max(direction, 0), 2*Math.PI);
+
         move(e.getTickrate(), 1);
         addEnergy(getBurnRate());
 
@@ -120,8 +122,8 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     protected void move(int tickrate, float steps) {
-        x+= Math.sin(direction) * speed / tickrate * steps;
-        y+= Math.cos(direction) * speed / tickrate * steps;
+        x+= Math.cos(direction) * speed / tickrate * steps;
+        y+= Math.sin(direction) * speed / tickrate * steps;
         keepInBounds();
     }
 
@@ -131,16 +133,16 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     protected void turnLeft() {
-        direction+= Math.PI / 64;
-        if (direction <= 0) {
-            direction= (float) (2 * Math.PI);
+        direction += Math.PI / 64;
+        if (direction >= 2*Math.PI) {
+            direction= (float) (direction - 2 * Math.PI);
         }
     }
 
     protected void turnRight() {
-        direction-= Math.PI / 64;
-        if (direction >= 2 * Math.PI) {
-            direction= 0;
+        direction -= Math.PI / 64;
+        if (direction <= 0) {
+            direction = (float) (direction + 2*Math.PI);
         }
     }
 

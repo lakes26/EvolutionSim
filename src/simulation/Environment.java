@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
+
 public class Environment {
     private static int foodRadius = 10;
     private static int startingNumFoodSpawned = 60;

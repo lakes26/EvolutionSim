@@ -39,6 +39,8 @@ public class Panel extends JPanel{
 	private Agent selectedAgent;
 	
 	private long track_id;
+
+	private StatisticPanel statisticPanel;
 	
 	public Panel(Environment environment, int width, int height) {
 		this.environment = environment;
@@ -55,8 +57,9 @@ public class Panel extends JPanel{
 		this.env_height = this.environment.getHeight();
 		this.env_width = this.environment.getWidth();
 		
-		this.mode = MODE_FREE;
+		this.mode = getModeFree();
 		this.track_id = -1;
+		this.statisticPanel = new StatisticPanel(this, 5, 15, 0);
 	}
 	
 	// go from graphical coords to environment coords
@@ -135,11 +138,6 @@ public class Panel extends JPanel{
 		g.drawRect((int) (this.scale * -off_x), (int) (this.scale * -off_y), 
 				   (int) (this.scale * this.env_width), (int) (this.scale * this.env_height));
 	
-		// draw info text
-		String info_text = this.mode == Panel.MODE_FREE ? "mode: free" : "mode: tracking";
-		g.setColor(Color.BLACK);
-		g.drawString(info_text, 5, 15);
-		
 		//draw save indicator
 		if(this.saveIndCountdown > 0) {
 		    g.setColor(Color.RED);
@@ -147,20 +145,7 @@ public class Panel extends JPanel{
 		    g.drawString("Saving...", width - 200, height - 100);
 		    saveIndCountdown--;
 		}
-		
-		if(selectedAgent != null && track_id != -1) {
-			String age = String.format("age: %f", selectedAgent.getAge());
-			String speed = String.format("speed: %.2f", selectedAgent.getSpeed());
-			String numOffspring = String.format("number of offspring: %d", selectedAgent.getNumOffspring());
-			String energy = String.format("energy level: %f", selectedAgent.getEnergy() + 2);
-			
-			g.drawString(age, 5, 25); 
-			g.drawString(speed, 5, 35);
-			g.drawString(numOffspring, 5, 45);
-			g.setFont(new Font("TimesNewRoman", Font.PLAIN, 16));
-			g.drawString(energy, 5, 60);
-			
-		}
+		statisticPanel.draw(g);
 	}
 	
 	// process a pan or zoom
@@ -191,7 +176,7 @@ public class Panel extends JPanel{
 		}
 		// set mode to free
 		if (action == KeyEvent.VK_F) {
-			this.mode = Panel.MODE_FREE;
+			this.mode = Panel.getModeFree();
 			this.track_id = -1;
 		}
 		// set mode to tracking
@@ -229,5 +214,18 @@ public class Panel extends JPanel{
 				}
 			}
 		}		
+	}
+
+	public Agent getSelectedAgent() {
+		return this.selectedAgent;
+	}
+
+	public int getMode() {
+		// TODO Auto-generated method stub
+		return this.mode;
+	}
+
+	public static int getModeFree() {
+		return MODE_FREE;
 	}
 }

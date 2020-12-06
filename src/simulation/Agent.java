@@ -55,7 +55,7 @@ public class Agent extends CollidableObject implements Serializable{
         } else {
             add= !agent.add;
         }
-        radius= (float) (agent.getRadius() + mutationRate * new Random().nextGaussian());
+        radius= (float) (agent.getRadius() + mutationRate * rand.nextGaussian());
         if (radius < 1) {
             radius= 1;
         }
@@ -63,7 +63,7 @@ public class Agent extends CollidableObject implements Serializable{
         neuralNet= agent.getNeuralNet().mutate(mutationRate);
         DNA= agent.mutateDNA();
         direction= 0;
-        speed= (float) (agent.getSpeed() + mutationRate * new Random().nextGaussian());
+        speed = (float) (agent.getSpeed() + mutationRate * rand.nextGaussian());
         age= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;

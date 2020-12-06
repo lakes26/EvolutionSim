@@ -1,11 +1,14 @@
 package graphics;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.SystemFlavorMap;
 import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ public class Panel extends JPanel{
 	
 	private Environment environment;
 
-	private int width, height, off_x, off_y, env_width, env_height, mode;
+	private int width, height, off_x, off_y, env_width, env_height, mode, saveIndCountdown;
 	private float scale;
 	private Agent selectedAgent;
 	
@@ -136,6 +139,28 @@ public class Panel extends JPanel{
 		String info_text = this.mode == Panel.MODE_FREE ? "mode: free" : "mode: tracking";
 		g.setColor(Color.BLACK);
 		g.drawString(info_text, 5, 15);
+		
+		//draw save indicator
+		if(this.saveIndCountdown > 0) {
+		    g.setColor(Color.RED);
+		    g.setFont(new Font("TimesNewRoman", Font.BOLD, 40));
+		    g.drawString("Saving...", width - 200, height - 100);
+		    saveIndCountdown--;
+		}
+		
+		if(selectedAgent != null && track_id != -1) {
+			String age = String.format("age: %f", selectedAgent.getAge());
+			String speed = String.format("speed: %.2f", selectedAgent.getSpeed());
+			String numOffspring = String.format("number of offspring: %d", selectedAgent.getNumOffspring());
+			String energy = String.format("energy level: %f", selectedAgent.getEnergy() + 2);
+			
+			g.drawString(age, 5, 25); 
+			g.drawString(speed, 5, 35);
+			g.drawString(numOffspring, 5, 45);
+			g.setFont(new Font("TimesNewRoman", Font.PLAIN, 16));
+			g.drawString(energy, 5, 60);
+			
+		}
 	}
 	
 	// process a pan or zoom
@@ -173,6 +198,14 @@ public class Panel extends JPanel{
 		if (action == KeyEvent.VK_T) {
 			this.mode = Panel.MODE_TRACK;
 		}
+		if(action == KeyEvent.VK_I) {
+		    try {
+                this.environment.saveToFile("save.txt");
+                this.saveIndCountdown = 90;
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
+		}
 	}
 
 	public void mouseClicked(int x, int y) {
@@ -190,7 +223,8 @@ public class Panel extends JPanel{
 				
 				// if clicking on this agent
 				if (dist < agent.getRadius()) {
-					this.track_id = agent.getID();					
+					this.track_id = agent.getID();
+					this.selectedAgent = agent;
 					return;
 				}
 			}

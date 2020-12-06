@@ -1,6 +1,7 @@
 package graphics;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -33,7 +34,7 @@ public class Panel extends JPanel{
 	
 	private Environment environment;
 
-	private int width, height, off_x, off_y, env_width, env_height, mode;
+	private int width, height, off_x, off_y, env_width, env_height, mode, saveIndCountdown;
 	private float scale;
 	private Agent selectedAgent;
 	
@@ -138,6 +139,14 @@ public class Panel extends JPanel{
 		String info_text = this.mode == Panel.MODE_FREE ? "mode: free" : "mode: tracking";
 		g.setColor(Color.BLACK);
 		g.drawString(info_text, 5, 15);
+		
+		//draw save indicator
+		if(this.saveIndCountdown > 0) {
+		    g.setColor(Color.RED);
+		    g.setFont(new Font("TimesNewRoman", Font.BOLD, 40));
+		    g.drawString("Saving...", width - 200, height - 100);
+		    saveIndCountdown--;
+		}
 	}
 	
 	// process a pan or zoom
@@ -177,8 +186,8 @@ public class Panel extends JPanel{
 		}
 		if(action == KeyEvent.VK_I) {
 		    try {
-		        System.out.println("test");
                 this.environment.saveToFile("save.txt");
+                this.saveIndCountdown = 90;
             } catch (Exception e) {
                 e.printStackTrace();
             } 

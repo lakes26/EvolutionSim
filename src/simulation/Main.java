@@ -22,8 +22,7 @@ public class Main {
         } else {
             env.init();
         }
-        int start_ticks = 0;
-        
+        int start_ticks = 10000;
         int print_every = 1000;
 
         for(int i = 0; i < start_ticks; ++i) {

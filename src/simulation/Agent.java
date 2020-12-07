@@ -17,6 +17,7 @@ public class Agent extends CollidableObject implements Serializable{
     protected byte[] DNA;
     private boolean add;
     private static int inputLength= 6;
+    private Matrix inputLayer;
     private float perceptiveRange;
     private float firstRange;
     private NeuralNetwork neuralNet;
@@ -24,6 +25,7 @@ public class Agent extends CollidableObject implements Serializable{
     private int numOffspring;
 
     private long id;
+	private Matrix outputLayer;
 
     public Agent(float x, float y, float radius, float direction, float speed) {
         super(x, y, radius);
@@ -84,9 +86,10 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     public void update(Environment e) {
-        Matrix inputLayer= pollEnvironment(e);
-        List<Float> outputLayer= neuralNet.propForward(inputLayer);
-
+        this.pollEnvironment(e);
+        this.outputLayer= neuralNet.propForward(this.inputLayer);       
+        List<Float> outputLayer = this.getOutputLayer().toArray();
+        
         int maxIndex= 0;
         float max= 0;
         for (int i= 0; i < outputLayer.size(); i++ ) {
@@ -185,7 +188,7 @@ public class Agent extends CollidableObject implements Serializable{
         return mutatedDNA;
     }
 
-    private Matrix pollEnvironment(Environment e) {
+    private void pollEnvironment(Environment e) {
         float[] inputArray= new float[inputLength];
         for (Food food : e.getFood()) {
             float dir = normalizeDirection(directionOf(food));
@@ -209,7 +212,7 @@ public class Agent extends CollidableObject implements Serializable{
             }
         }
 
-        return Matrix.fromArray(inputArray);
+        this.inputLayer =  Matrix.fromArray(inputArray);
     }
 
     private void pointTowards(CollidableObject o) {
@@ -251,5 +254,16 @@ public class Agent extends CollidableObject implements Serializable{
 	public int getNumOffspring() {
 		return this.numOffspring;
 	}
+	
+	public Matrix getInputLayer() {
+		return this.inputLayer;
+	}
+	
+	public NeuralNetwork getNeuralNetwork() {
+		return this.neuralNet;
+	}
 
+	public Matrix getOutputLayer() {
+		return this.outputLayer;
+	}
 }

@@ -27,7 +27,7 @@ public class Environment {
     private static int minAgentSpeed = 3;
     private static int maxAgentSpeed = 4;
     private static float mutationRate = (float) 0.05;
-    private static int maxAge = 800;
+    private static int maxAge = Integer.MAX_VALUE;
     private static int width = 800;
     private static int height = 800;
 

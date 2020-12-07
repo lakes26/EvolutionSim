@@ -1,6 +1,7 @@
 package graphics;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -41,6 +42,7 @@ public class Panel extends JPanel{
 	private long track_id;
 
 	private StatisticPanel statisticPanel;
+	private NeuralNetworkVisualizer neuralNetworkVisualizer;
 
 	
 	public Panel(Environment environment, int width, int height) {
@@ -61,6 +63,8 @@ public class Panel extends JPanel{
 		this.mode = getModeFree();
 		this.track_id = -1;
 		this.statisticPanel = new StatisticPanel(this, 5, 15, 0);
+		neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(600, 300));
+		neuralNetworkVisualizer.setLocation(25, 150);
 	}
 	
 	// go from graphical coords to environment coords
@@ -147,6 +151,7 @@ public class Panel extends JPanel{
 		    saveIndCountdown--;
 		}
 		statisticPanel.draw(g);
+		neuralNetworkVisualizer.draw(g);
 	}
 	
 	// process a pan or zoom

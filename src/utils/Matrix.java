@@ -113,4 +113,8 @@ public class Matrix implements Serializable{
 		toAdd.multiply(mutationRate);
 		return Matrix.add(m, toAdd);
 	}
+	
+	public float getWeight(int i, int j) {
+		return this.data[i][j];
+	}
 }

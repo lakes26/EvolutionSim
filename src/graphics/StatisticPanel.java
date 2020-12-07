@@ -1,5 +1,6 @@
 package graphics;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class StatisticPanel {
 	}
 	
 	private void drawStrings(Graphics g, List<String> strings) {
+		g.setColor(Color.BLACK);
 		g.setFont(this.font);
 		int lineheight = g.getFontMetrics().getAscent() + g.getFontMetrics().getDescent();
 		int y_off = 0;

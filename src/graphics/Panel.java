@@ -43,6 +43,7 @@ public class Panel extends JPanel{
 
 	private StatisticPanel statisticPanel;
 	private NeuralNetworkVisualizer neuralNetworkVisualizer;
+	private EnvironmentRenderer environmentRenderer;
 
 	
 	public Panel(Environment environment, int width, int height) {
@@ -63,8 +64,25 @@ public class Panel extends JPanel{
 		this.mode = getModeFree();
 		this.track_id = -1;
 		this.statisticPanel = new StatisticPanel(this, 5, 15, 0);
-		neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(600, 300));
+		neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(300, 300));
 		neuralNetworkVisualizer.setLocation(25, 150);
+		this.environmentRenderer = new EnvironmentRenderer(this);
+	}
+		
+	@Override
+	public void paintComponent(Graphics g) {		
+		clear(g);		
+		
+		// set the and y offsets based on tracking
+		setOffsets();
+		//render the environment;
+		environmentRenderer.renderEnvironment(g);
+	
+		//draw save indicator if saving
+		drawSaveIndicator(g);
+		
+		statisticPanel.draw(g);
+		neuralNetworkVisualizer.draw(g);
 	}
 	
 	// go from graphical coords to environment coords
@@ -84,23 +102,27 @@ public class Panel extends JPanel{
 				
 		return p;
 	}
-		
-	@Override
-	public void paintComponent(Graphics g) {		
-		// add the background
+	
+	private void drawSaveIndicator(Graphics g) {
+		if(this.saveIndCountdown > 0) {
+		    g.setColor(Color.RED);
+		    g.setFont(new Font("TimesNewRoman", Font.BOLD, 40));
+		    g.drawString("Saving...", width - 200, height - 100);
+		    saveIndCountdown--;
+		}
+	}
+	
+	private void clear(Graphics g) {
 		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, this.width, this.height);
-		
-		// get agents and food
-		ArrayList<Agent> agents = environment.getAgents();
-		ArrayList<Food> foods = environment.getFood();
-		
-		// set the and y offsets based on tracking
+	}
+	
+	private void setOffsets() {
 		if (this.mode == Panel.MODE_TRACK && this.track_id != -1) {
 			boolean dead = true;
 			
-			for (int i = 0; i < agents.size(); ++i) {
-				Agent agent = agents.get(i);
+			for (int i = 0; i < environment.getAgents().size(); ++i) {
+				Agent agent = environment.getAgents().get(i);
 				
 				if (agent.getID() == this.track_id) {
 					dead = false;
@@ -116,44 +138,8 @@ public class Panel extends JPanel{
 				this.track_id = -1;
 			}
 		}
-		
-		// draw the agents
-		g.setColor(Color.RED);
-		for(int i = 0; i < agents.size(); i++){
-			Agent agent = agents.get(i);
-			int radius = (int) agent.getRadius();
-			byte[] DNA = agent.getDNA();
-			g.setColor(new Color(DNA[0] - Byte.MIN_VALUE, DNA[1] - Byte.MIN_VALUE, DNA[2] - Byte.MIN_VALUE));
-			g.fillOval((int) (this.scale * (agent.getX() - radius - off_x)), (int) (this.scale * (agent.getY() - radius - off_y)), 
-				       (int) (2 * radius * this.scale), (int) (2 * radius * this.scale));
-		}
-		
-		// draw the food
-		g.setColor(Color.BLUE);
-		for(int i = 0; i < foods.size(); i++){
-			Food food = foods.get(i);
-			int radius = (int) food.getRadius();
-			
-			g.fillOval((int) (this.scale * (food.getX() - radius - off_x)), (int) (this.scale * (food.getY() - radius - off_y)), 
-				       (int) (2 * radius * this.scale), (int) (2 * radius * this.scale));
-		}
-		
-		// draw the border of the environment
-		g.setColor(Color.BLACK);
-		g.drawRect((int) (this.scale * -off_x), (int) (this.scale * -off_y), 
-				   (int) (this.scale * this.env_width), (int) (this.scale * this.env_height));
-	
-		//draw save indicator
-		if(this.saveIndCountdown > 0) {
-		    g.setColor(Color.RED);
-		    g.setFont(new Font("TimesNewRoman", Font.BOLD, 40));
-		    g.drawString("Saving...", width - 200, height - 100);
-		    saveIndCountdown--;
-		}
-		statisticPanel.draw(g);
-		neuralNetworkVisualizer.draw(g);
 	}
-	
+
 	// process a pan or zoom
 	public void keyAction(int action) {
 		if (action == KeyEvent.VK_UP) {
@@ -238,4 +224,33 @@ public class Panel extends JPanel{
 	public long getTrackingID() {
 		return this.track_id;
 	}
-}
+	
+	public int getOff_x() {
+		return off_x;
+	}
+
+	public int getOff_y() {
+		return off_y;
+	}
+
+
+	public int getEnv_width() {
+		return env_width;
+	}
+
+	public int getEnv_height() {
+		return env_height;
+	}
+
+	public float getScale() {
+		return scale;
+	}
+
+	
+	public Environment getEnvironment() {
+		return this.environment;
+	}
+ 
+ }
+
+

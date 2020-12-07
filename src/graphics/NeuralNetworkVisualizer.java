@@ -13,6 +13,7 @@ import utils.NeuralNetwork;
 public class NeuralNetworkVisualizer {
 	
 	private static int nodeSize = 20;
+	private static int borderBuffer = 20;
 	
 	private Panel panel;
 	private Dimension size;
@@ -70,6 +71,15 @@ public class NeuralNetworkVisualizer {
 		int[] structure = nn.getStructure();
 		int widthGap = this.partitionWidth(structure.length);
 		
+		int maxLayerSize = 0;
+		for(int i = 0; i < structure.length; i++) {
+			if(structure[i] > maxLayerSize) {
+				maxLayerSize = structure[i];
+			}
+		}
+		
+		int standardPartition = this.partitionHeight(maxLayerSize);
+		
 		for(int i = 0; i < structure.length - 1; i++) {
 			
 			int oldLayerHeightGap = this.partitionHeight(structure[i]);
@@ -78,16 +88,34 @@ public class NeuralNetworkVisualizer {
 			for(int j = 0; j < structure[i]; j++) {
 				for(int k = 0; k < structure[i + 1]; k++) {
 					Color color = this.calculateColor(nn.getWeight(i, k, j));
-					this.drawLine(g, color, this.x + i * widthGap, this.y + (j + 1) * oldLayerHeightGap, this.x + (i + 1) * widthGap, this.y + (k + 1) * newLayerHeightGap);
+					this.drawLine(g, color, borderBuffer + this.x + i * widthGap, (int)((maxLayerSize - structure[i])/ 2.0 * standardPartition) + borderBuffer + this.y + j * standardPartition,
+											borderBuffer + this.x + (i + 1) * widthGap, (int)((maxLayerSize - structure[i+1])/ 2.0 * standardPartition) + borderBuffer + this.y + k * standardPartition);
 				}
 			}
 			
 		}
 	}
 	
+	private void drawOutline(Graphics g) {
+		this.drawLine(g, Color.black, this.x, this.y, this.x + this.size.width, this.y);
+		this.drawLine(g, Color.black, this.x + this.size.width, this.y, this.x + this.size.width, this.y + this.size.height);
+		this.drawLine(g, Color.black, this.x + this.size.width, this.y + this.size.height, this.x, this.y + this.size.height);
+		this.drawLine(g, Color.black, this.x, this.y + this.size.height, this.x, this.y);
+		
+	}
+	
 	private void drawNodes(Graphics g, NeuralNetwork nn) {
 		int[] structure = nn.getStructure();
 		int widthGap = this.partitionWidth(structure.length);
+		
+		int maxLayerSize = 0;
+		for(int i = 0; i < structure.length; i++) {
+			if(structure[i] > maxLayerSize) {
+				maxLayerSize = structure[i];
+			}
+		}
+		
+		int standardPartition = this.partitionHeight(maxLayerSize);
 		
 		for(int i = 0; i < structure.length; i++) {
 			
@@ -102,7 +130,8 @@ public class NeuralNetworkVisualizer {
 				} else {
 					color = Color.WHITE;
 				}
-				this.drawNode(g, color, this.x + i * widthGap, this.y + (j + 1) * layerHeightGap);
+				this.drawNode(g, color,  borderBuffer + this.x + i * widthGap, 
+								(int)((maxLayerSize - structure[i])/ 2.0 * standardPartition) + borderBuffer + this.y + j * standardPartition);
 			}
 		}
 	}
@@ -110,6 +139,7 @@ public class NeuralNetworkVisualizer {
 	private void drawAgentNeuralNet(Graphics g, Agent agent) {
 		if(agent != null && this.panel.getTrackingID() != -1) {
 			NeuralNetwork nn = agent.getNeuralNetwork();
+			drawOutline(g);
 			drawLines(g, nn);
 			drawNodes(g, nn);
 		}
@@ -120,11 +150,11 @@ public class NeuralNetworkVisualizer {
 	}
 	
 	public int partitionHeight(int numNodes) {
-		return this.size.height / (numNodes + 1);
+		return (this.size.height - (2 * borderBuffer)) / (numNodes - 1);
 	}
 	
 	public int partitionWidth(int numLayers) {
-		return this.size.width / (numLayers + 1);
+		return (this.size.width - (2 * borderBuffer)) / (numLayers - 1);
 	}
 	
 	public void setLocation(int x, int y) {

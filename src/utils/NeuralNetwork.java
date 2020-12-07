@@ -20,7 +20,6 @@ public class NeuralNetwork implements Serializable{
 			weights[i] = Matrix.random(layers[i+1], layers[i]);
 			biases[i] = Matrix.random(layers[i+1], 1);
 		}
-		System.out.println(Arrays.toString(this.getStructure()));
 	}
 	
 

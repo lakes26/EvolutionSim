@@ -22,6 +22,7 @@ public class Main {
         } else {
             env.init();
         }
+        
         int start_ticks = 0;
         int print_every = 1000;
 
@@ -29,8 +30,8 @@ public class Main {
             env.tick();
 
             if (i % print_every == 0) {
-                System.out.printf("%d/%d: %d agents, %d food CC: %d\n ", i, start_ticks, env.getAgents().size(),
-                    env.getFood().size(), env.getCarryingCapacity());
+                System.out.printf("%d/%d: %d agents, %d food CC: %d Generation: %d\n ", i, start_ticks, env.getAgents().size(),
+                    env.getFood().size(), env.getCarryingCapacity(), env.averageGeneration());
             }
         }
 

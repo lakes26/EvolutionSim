@@ -200,4 +200,13 @@ public class Environment {
         capacity= foodPerTick / averageBurn;
         return (int) capacity;
     }
+
+    public int averageGeneration() {
+        float total = 0;
+        for (Agent a: getAgents()) {
+            total += a.getGeneration();
+        }
+        float average = total / getAgents().size();
+        return (int) average;
+    }
 }

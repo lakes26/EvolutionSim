@@ -32,6 +32,8 @@ public class VariablesPanel extends OverlayPanel {
     @Override
     public void render(Graphics g) {
         drawOutline(g, OUTLINE);
+        this.setTitle("Variables");
+        this.renderTitle(g);
         arrangeSliders();
         for(SliderComponent slider : sliders) {
             slider.drawSlider(g, x, y);

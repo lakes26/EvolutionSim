@@ -50,6 +50,9 @@ public class KeyInput implements KeyListener {
 		if (this.keys[KeyEvent.VK_T]) {
 			this.panel.keyAction(KeyEvent.VK_T);
 		}
+		if (this.keys[KeyEvent.VK_P]) {
+            this.panel.keyAction(KeyEvent.VK_P);
+        }
 	}
 	
 	@Override

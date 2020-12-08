@@ -8,7 +8,6 @@ import java.util.Random;
 import utils.Matrix;
 import utils.NeuralNetwork;
 
-
 public class Agent extends CollidableObject implements Serializable{
     private static final long serialVersionUID = 1L;
     protected float speed;
@@ -17,7 +16,6 @@ public class Agent extends CollidableObject implements Serializable{
     protected float age;
     protected byte[] DNA;
     private boolean add;
-    private static int inputLength= 6;
     private Matrix inputLayer;
     private float perceptiveRange;
     private float firstRange;
@@ -26,8 +24,13 @@ public class Agent extends CollidableObject implements Serializable{
     private int numOffspring;
     private int generation;
     private long id;
-	private Matrix outputLayer;
-	private List<Agent> offspring;
+    private Matrix outputLayer;
+    private List<Agent> offspring;
+
+    private float fov = (float) (Math.PI/4);
+    private static int verticalVisionSlices = 2;
+    private static int horizontalVisionSlices = 4;
+    private static int inputLength = verticalVisionSlices*horizontalVisionSlices;
 
     public Agent(float x, float y, float radius, float direction, float speed) {
         super(x, y, radius);
@@ -38,7 +41,7 @@ public class Agent extends CollidableObject implements Serializable{
         energy= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;
-        neuralNet= new NeuralNetwork(inputLength, 8, 3);
+        neuralNet= new NeuralNetwork(inputLength, 6, 3);
         DNA= new byte[3];
         rand.nextBytes(DNA);
         numOffspring = 0;
@@ -78,43 +81,43 @@ public class Agent extends CollidableObject implements Serializable{
         offspring = new ArrayList<>();
 
         generateID();
-        
+
         agent.offspring.add(this);
     }
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
-	public float getDirection() {
-		return direction;
-	}
+    public float getDirection() {
+        return direction;
+    }
 
-	public boolean isAdd() {
-		return add;
-	}
+    public boolean isAdd() {
+        return add;
+    }
 
-	public static int getInputLength() {
-		return inputLength;
-	}
+    public static int getInputLength() {
+        return inputLength;
+    }
 
-	public float getPerceptiveRange() {
-		return perceptiveRange;
-	}
+    public float getPerceptiveRange() {
+        return perceptiveRange;
+    }
 
-	public float getFirstRange() {
-		return firstRange;
-	}
+    public float getFirstRange() {
+        return firstRange;
+    }
 
-	public static Random getRand() {
-		return rand;
-	}
+    public static Random getRand() {
+        return rand;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	private void generateID() {
+    private void generateID() {
         Random rand = new Random();
         id = Math.abs(rand.nextLong());
     }
@@ -124,10 +127,10 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     public void update(Environment e) {
-        this.pollEnvironment(e);
-        this.outputLayer= neuralNet.propForward(this.inputLayer);       
-        List<Float> outputLayer = this.getOutputLayer().toArray();
-        
+        pollEnvironment(e);
+        outputLayer= neuralNet.propForward(inputLayer);
+        List<Float> outputLayer = getOutputLayer().toArray();
+
         int maxIndex= 0;
         float max= 0;
         for (int i= 0; i < outputLayer.size(); i++ ) {
@@ -138,17 +141,15 @@ public class Agent extends CollidableObject implements Serializable{
         }
 
         if (maxIndex == 0) {
+            move(1);
             turnLeft();
         } else if (maxIndex == 1) {
-
+            move(1);
         } else {
+            move(1);
             turnRight();
         }
         direction = normalizeDirection(direction);
-
-
-        move(e.getTickrate(), 1);
-        addEnergy(getBurnRate());
 
         Food closestFood= findClosestFood(e.getFood());
         if (closestFood != null) {
@@ -168,9 +169,10 @@ public class Agent extends CollidableObject implements Serializable{
         return age;
     }
 
-    protected void move(int tickrate, float steps) {
-        x+= Math.sin(direction) * speed;
-        y+= Math.cos(direction) * speed;
+    protected void move(float dist) {
+        x+= Math.sin(direction) * speed * dist;
+        y+= Math.cos(direction) * speed * dist;
+        addEnergy(getBurnRate()*dist);
         keepInBounds();
     }
 
@@ -227,31 +229,29 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     private void pollEnvironment(Environment e) {
-        float[] inputArray= new float[inputLength];
-        for (Food food : e.getFood()) {
-            float dir = normalizeDirection(directionOf(food));
+        ArrayList<Food> food = e.getFood();
+        int totalSlices = verticalVisionSlices*horizontalVisionSlices;
+        float[] inputArray = new float[totalSlices];
+        float fovLeft = -fov/2;
+        float fovStep = fov/horizontalVisionSlices;
+        float rangeStep = perceptiveRange/verticalVisionSlices;
+
+        for (Food f:food) {
+            float dir = normalizeDirection(directionOf(f));
             float angle = normalizeDirection(direction-dir);
-            if (getDistance(food) <= firstRange && angle < Math.PI / 12 && angle > -Math.PI / 12 ) {
-                inputArray[0]++ ;
-            } else if (getDistance(food) <= firstRange && angle >= Math.PI / 12 &&
-                angle <= 3 * Math.PI / 12) {
-                inputArray[1]++ ;
-            } else if (getDistance(food) <= firstRange && angle <= -Math.PI / 12 &&
-                angle >= -3 * Math.PI / 12) {
-                inputArray[2]++ ;
-            } else if (getDistance(food) <= perceptiveRange && angle < Math.PI / 12 && angle > -Math.PI / 12) {
-                inputArray[3]++ ;
-            } else if (getDistance(food) <= perceptiveRange &&
-                angle >= Math.PI / 12 && angle <= 3 * Math.PI / 12) {
-                inputArray[4]++ ;
-            } else if (getDistance(food) <= perceptiveRange &&
-                angle <= -Math.PI / 12 && angle >= -3 * Math.PI / 12) {
-                inputArray[5]++ ;
+            float dist = getDistance(f);
+            int vSlice = (int)(dist/rangeStep);
+            int hSlice = (int)((angle+fovLeft)/fovStep);
+            if (vSlice >=0 && vSlice < verticalVisionSlices) {
+                if (hSlice >= 0 && hSlice < horizontalVisionSlices) {
+                    int index = vSlice + hSlice*verticalVisionSlices;
+                    inputArray[index] += 1;
+                }
             }
         }
-
-        this.inputLayer =  Matrix.fromArray(inputArray);
+        inputLayer =  Matrix.fromArray(inputArray);
     }
+
 
     private void pointTowards(CollidableObject o) {
         direction= (float) Math.atan2(o.x - x, o.y - y);
@@ -289,28 +289,28 @@ public class Agent extends CollidableObject implements Serializable{
         return (float) (-getSpeed() * 0.002 * Math.log(getRadius()));
     }
 
-	public int getNumOffspring() {
-		return this.numOffspring;
-	}
-	
-	public Matrix getInputLayer() {
-		return this.inputLayer;
-	}
-	
-	public NeuralNetwork getNeuralNetwork() {
-		return this.neuralNet;
-	}
-	
-    
-	public Matrix getOutputLayer() {
-		return this.outputLayer;
-	}
-	
+    public int getNumOffspring() {
+        return numOffspring;
+    }
+
+    public Matrix getInputLayer() {
+        return inputLayer;
+    }
+
+    public NeuralNetwork getNeuralNetwork() {
+        return neuralNet;
+    }
+
+
+    public Matrix getOutputLayer() {
+        return outputLayer;
+    }
+
     public int getGeneration() {
         return generation;
     }
-    
+
     public List<Agent> getOffspring() {
- 		return offspring;
- 	}
+        return offspring;
+    }
 }

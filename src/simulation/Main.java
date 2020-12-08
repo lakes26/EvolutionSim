@@ -6,7 +6,7 @@ import graphics.Renderer;
 
 public class Main {
 
-    private static final int frame_rate = 60;
+    private static final int frame_rate = 30;
 
     public static void main(String[] args) {
         // start the environment
@@ -23,7 +23,7 @@ public class Main {
             env.init();
         }
         
-        int start_ticks = 5000;
+        int start_ticks = 20000;
         int print_every = 1000;
 
         for(int i = 0; i < start_ticks; ++i) {

@@ -82,7 +82,6 @@ public class Environment {
             if (agent.getEnergy() > splitThreshold) {
                 // 100 is spawndistance. probably shouldn't be a literal, but who cares
                 Agent newAgent= new Agent(agent, mutationRate);
-                newAgent.setSpeed(Environment.minAgentSpeed);
                 toAdd.add(newAgent);
                 agent.setEnergy(0);
             }

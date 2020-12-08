@@ -71,7 +71,7 @@ public class Agent extends CollidableObject implements Serializable{
         neuralNet= agent.getNeuralNet().mutate(mutationRate);
         DNA= agent.mutateDNA();
         direction= 0;
-        speed = (float) (agent.getSpeed() + mutationRate * rand.nextGaussian());
+        speed = (float) (agent.getSpeed() + mutationRate * (float) rand.nextGaussian());
         age= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;

@@ -1,6 +1,8 @@
 package graphics;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -8,22 +10,21 @@ import java.util.List;
 
 import simulation.Agent;
 
-public class StatisticPanel {
+public class StatisticPanel extends OverlayPanel {
 	private static Font defaultFont = new Font("TimesNewRoman", Font.PLAIN, 20);
 	
 	private Font font;
-	private Panel panel;
-	private int x;
-	private int y;
 	private int lineSpacing;
+
+	private int yOff;
 	
 	@SuppressWarnings("exports")
 	public StatisticPanel(Panel p, int x, int y, int lineSpacing) {
-		this.panel = p;
+		super(p, new Dimension());
+
 		this.setFont(defaultFont);
-		this.x = x;
-		this.y = y;
 		this.lineSpacing = lineSpacing;
+		this.yOff = 5;
 	}
 	
 	private List<String> generateStrings(Agent agent) {
@@ -45,16 +46,19 @@ public class StatisticPanel {
 		g.setColor(Color.BLACK);
 		g.setFont(this.font);
 		int lineheight = g.getFontMetrics().getAscent() + g.getFontMetrics().getDescent();
-		int y_off = 0;
 		for(String string : strings) {
-			g.drawString(string, x, this.y + y_off);
-			y_off += lineheight + lineSpacing;
+			g.drawString(string, x, this.y + yOff);
+			yOff += lineheight + lineSpacing;
 		}
+		
+		this.dimension.height = yOff - lineheight + lineSpacing;
 	}
 	
 	
 	@SuppressWarnings("exports")
-	public void draw(Graphics g) {
+	@Override
+	public void render(Graphics g) {
+		this.yOff = y + 5;
 		drawStrings(g, this.generateStrings(this.panel.getSelectedAgent()));
 	}
 

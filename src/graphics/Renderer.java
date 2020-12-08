@@ -12,9 +12,11 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 
+
 import input.KeyInput;
 import input.MouseInput;
 import simulation.Environment;
+import simulation.Main;
 
 public class Renderer {	
 	private Environment environment;
@@ -23,6 +25,8 @@ public class Renderer {
 	private KeyInput keyInput;
 	private MouseListener mouseListener;
 	private MouseInput mouseInput;
+	
+	private double framesToRender;
 	
 	public Renderer() {
 
@@ -65,6 +69,8 @@ public class Renderer {
 		this.panel.addKeyListener(this.keyInput);
 		this.mouseInput = new MouseInput(this.panel);
 		this.panel.addMouseListener(this.mouseInput);
+		
+		this.framesToRender = 0;
 	}
 	
 	/**
@@ -79,6 +85,7 @@ public class Renderer {
 		
 		// rerender the game
 		this.panel.repaint();
+		
 	}
 	
 	@SuppressWarnings("exports")

@@ -6,7 +6,7 @@ import graphics.Renderer;
 
 public class Main {
 
-    private static final int frame_rate = 30;
+    private static final int frame_rate = 60;
 
     public static void main(String[] args) {
         // start the environment
@@ -23,7 +23,7 @@ public class Main {
             env.init();
         }
         
-        int start_ticks = 50000;
+        int start_ticks = 5000;
         int print_every = 1000;
 
         for(int i = 0; i < start_ticks; ++i) {
@@ -42,6 +42,7 @@ public class Main {
 
         // render forever
         long start_time;
+        double ticksDifference = 0;
         while (true) {
 
             // start the timer
@@ -51,7 +52,8 @@ public class Main {
             renderer.render();
 
             // wait
-            while (System.currentTimeMillis() - start_time < 1000 / frame_rate) {
+            while (System.currentTimeMillis() - start_time < 1000 / frame_rate) {          	
+            	
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
@@ -63,4 +65,8 @@ public class Main {
             }
         }
     }
+
+	public static int getFramerate() {
+		return frame_rate;
+	}
 }

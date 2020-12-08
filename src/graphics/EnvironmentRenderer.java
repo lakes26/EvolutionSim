@@ -29,6 +29,7 @@ public class EnvironmentRenderer {
 	}
 	
 	private void drawAgents(Graphics g) {
+		
 		ArrayList<Agent> agents = panel.getEnvironment().getAgents();
 		
 		for(int i = 0; i < agents.size(); i++){
@@ -36,12 +37,27 @@ public class EnvironmentRenderer {
 			int radius = (int) agent.getRadius();
 			byte[] DNA = agent.getDNA();
 			g.setColor(new Color(DNA[0] - Byte.MIN_VALUE, DNA[1] - Byte.MIN_VALUE, DNA[2] - Byte.MIN_VALUE));
+			drawAgent(g, agent, (int) (panel.getScale() * (agent.getX() - panel.getOff_x())),
+								(int) (panel.getScale() * (agent.getY() - panel.getOff_y())), 
+								panel.getScale());
+			/*
 			g.fillOval(	(int) (panel.getScale() * (agent.getX() - radius - panel.getOff_x())), 
 						(int) (panel.getScale() * (agent.getY() - radius - panel.getOff_y())), 
 						(int) (2 * radius * panel.getScale()), (int) (2 * radius * panel.getScale()));
+			*/
 		}
 	}
 	
+	public void drawAgent(Graphics g, Agent agent, int x, int y, float scale) {
+		int radius = (int) agent.getRadius();
+		byte[] DNA = agent.getDNA();
+		g.setColor(new Color(DNA[0] - Byte.MIN_VALUE, DNA[1] - Byte.MIN_VALUE, DNA[2] - Byte.MIN_VALUE));
+		g.fillOval(	(int) (x - radius * scale), (int) (y - radius * scale) , (int) (2 * radius * scale), (int) (2 * radius * scale));
+		g.setColor(Color.BLACK);
+		g.drawLine(x, y, (int) (x + (Math.sin(agent.getDirection()) * radius * scale)), (int) (y + (Math.cos(agent.getDirection()) * radius * scale)));
+	}
+
+
 	private void drawFood(Graphics g) {
 		ArrayList<Food> foods = panel.getEnvironment().getFood();
 		

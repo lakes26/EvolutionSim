@@ -1,6 +1,7 @@
 package simulation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +27,7 @@ public class Agent extends CollidableObject implements Serializable{
     private int generation;
     private long id;
 	private Matrix outputLayer;
+	private List<Agent> offspring;
 
     public Agent(float x, float y, float radius, float direction, float speed) {
         super(x, y, radius);
@@ -36,12 +38,13 @@ public class Agent extends CollidableObject implements Serializable{
         energy= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;
-        neuralNet= new NeuralNetwork(inputLength,6, 3);
+        neuralNet= new NeuralNetwork(inputLength, 8, 3);
         DNA= new byte[3];
         rand.nextBytes(DNA);
         numOffspring = 0;
         generation = 0;
         generateID();
+        offspring = new ArrayList<>();
     }
 
     /** Creates a duplicate of given agent, spawned a given distance from it's original
@@ -72,11 +75,46 @@ public class Agent extends CollidableObject implements Serializable{
         generation = agent.generation + 1;
         agent.numOffspring++;
         numOffspring = 0;
+        offspring = new ArrayList<>();
 
         generateID();
+        
+        agent.offspring.add(this);
     }
 
-    private void generateID() {
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public float getDirection() {
+		return direction;
+	}
+
+	public boolean isAdd() {
+		return add;
+	}
+
+	public static int getInputLength() {
+		return inputLength;
+	}
+
+	public float getPerceptiveRange() {
+		return perceptiveRange;
+	}
+
+	public float getFirstRange() {
+		return firstRange;
+	}
+
+	public static Random getRand() {
+		return rand;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	private void generateID() {
         Random rand = new Random();
         id = Math.abs(rand.nextLong());
     }
@@ -131,8 +169,8 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     protected void move(int tickrate, float steps) {
-        x+= Math.sin(direction) * speed / tickrate * steps;
-        y+= Math.cos(direction) * speed / tickrate * steps;
+        x+= Math.sin(direction) * speed;
+        y+= Math.cos(direction) * speed;
         keepInBounds();
     }
 
@@ -271,4 +309,8 @@ public class Agent extends CollidableObject implements Serializable{
     public int getGeneration() {
         return generation;
     }
+    
+    public List<Agent> getOffspring() {
+ 		return offspring;
+ 	}
 }

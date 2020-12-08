@@ -15,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -42,8 +43,9 @@ public class Panel extends JPanel{
 	private long track_id;
 
 	private StatisticPanel statisticPanel;
-	private NeuralNetworkVisualizer neuralNetworkVisualizer;
+	//private NeuralNetworkVisualizer neuralNetworkVisualizer;
 	private EnvironmentRenderer environmentRenderer;
+	private OverlayManager overlayManager;
 
 	
 	public Panel(Environment environment, int width, int height) {
@@ -64,9 +66,13 @@ public class Panel extends JPanel{
 		this.mode = getModeFree();
 		this.track_id = -1;
 		this.statisticPanel = new StatisticPanel(this, 5, 15, 0);
-		neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(300, 300));
-		neuralNetworkVisualizer.setLocation(25, 150);
+		//neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(300, 300));
+		//neuralNetworkVisualizer.setLocation(25, 150);
 		this.environmentRenderer = new EnvironmentRenderer(this);
+		this.overlayManager = new OverlayManager();
+		this.overlayManager.add(new StatisticPanel(this, 5, 15, 0));
+		this.overlayManager.add(new NeuralNetworkVisualizer(this, new Dimension(300, 300)));
+		this.overlayManager.add(new OffspringPanel(this, new Dimension(100, 300)));
 	}
 		
 	@Override
@@ -77,12 +83,13 @@ public class Panel extends JPanel{
 		setOffsets();
 		//render the environment;
 		environmentRenderer.renderEnvironment(g);
-	
+		overlayManager.renderOverlay(g);
+		
 		//draw save indicator if saving
 		drawSaveIndicator(g);
 		
-		statisticPanel.draw(g);
-		neuralNetworkVisualizer.draw(g);
+		//statisticPanel.draw(g);
+		//neuralNetworkVisualizer.draw(g);
 	}
 	
 	// go from graphical coords to environment coords
@@ -246,7 +253,6 @@ public class Panel extends JPanel{
 		return scale;
 	}
 
-	
 	public Environment getEnvironment() {
 		return this.environment;
 	}

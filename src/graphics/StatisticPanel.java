@@ -37,6 +37,7 @@ public class StatisticPanel extends OverlayPanel {
 			returnList.add(String.format("speed: %.2f", agent.getSpeed()));
 			returnList.add(String.format("number of offspring: %d", agent.getNumOffspring()));
 			returnList.add(String.format("energy level: %f", agent.getEnergy() + 2));
+			returnList.add(String.format("size: %.2f", agent.getRadius()));
 		}
 		
 		return returnList;

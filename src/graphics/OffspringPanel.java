@@ -61,7 +61,7 @@ public class OffspringPanel extends OverlayPanel{
 			
 			double dist = Math.sqrt(Math.pow(x - currX, 2) - Math.pow(y - currY, 2));
 			
-			if (dist < agent.getRadius() * scale) {
+			if (dist < agent.getRadius() * scale * 2) {
 				panel.setTrack_id(child.getID());
 				panel.setSelectedAgent(child);
 				return;

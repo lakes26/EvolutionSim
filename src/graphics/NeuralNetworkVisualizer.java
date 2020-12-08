@@ -139,13 +139,13 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 		}
 	}
 	
+	public void clicked(int x, int y) {
+		return;
+	}
+	
 	@Override
 	public void render(Graphics g) {
 		drawAgentNeuralNet(g, this.panel.getSelectedAgent());
 	}
 
-	public void setLocation(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
 }

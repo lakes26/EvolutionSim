@@ -71,4 +71,10 @@ public class StatisticPanel extends OverlayPanel {
 	public void setFont(Font font) {
 		this.font = font;
 	}
+
+	@Override
+	public void clicked(int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
 }

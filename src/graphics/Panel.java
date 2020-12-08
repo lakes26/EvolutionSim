@@ -51,7 +51,7 @@ public class Panel extends JPanel{
 	public Panel(Environment environment, int width, int height) {
 		this.environment = environment;
 		
-		this.selectedAgent = null;
+		this.setSelectedAgent(null);
 		
 		this.width = width;
 		this.height = height;
@@ -64,7 +64,7 @@ public class Panel extends JPanel{
 		this.env_width = this.environment.getWidth();
 		
 		this.mode = getModeFree();
-		this.track_id = -1;
+		this.setTrack_id(-1);
 		this.statisticPanel = new StatisticPanel(this, 5, 15, 0);
 		//neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(300, 300));
 		//neuralNetworkVisualizer.setLocation(25, 150);
@@ -125,13 +125,13 @@ public class Panel extends JPanel{
 	}
 	
 	private void setOffsets() {
-		if (this.mode == Panel.MODE_TRACK && this.track_id != -1) {
+		if (this.mode == Panel.MODE_TRACK && this.getTrack_id() != -1) {
 			boolean dead = true;
 			
 			for (int i = 0; i < environment.getAgents().size(); ++i) {
 				Agent agent = environment.getAgents().get(i);
 				
-				if (agent.getID() == this.track_id) {
+				if (agent.getID() == this.getTrack_id()) {
 					dead = false;
 										
 					this.off_x = (int) (agent.getX() + agent.getRadius() / 2 - (this.width) / this.scale / 2); 
@@ -142,7 +142,7 @@ public class Panel extends JPanel{
 			}
 			
 			if (dead) {
-				this.track_id = -1;
+				this.setTrack_id(-1);
 			}
 		}
 	}
@@ -176,7 +176,7 @@ public class Panel extends JPanel{
 		// set mode to free
 		if (action == KeyEvent.VK_F) {
 			this.mode = Panel.getModeFree();
-			this.track_id = -1;
+			this.setTrack_id(-1);
 		}
 		// set mode to tracking
 		if (action == KeyEvent.VK_T) {
@@ -193,6 +193,7 @@ public class Panel extends JPanel{
 	}
 
 	public void mouseClicked(int x, int y) {
+		this.overlayManager.checkClickComponants(x, y);
 		Point p = this.getEnvironmentCoordinates(x, y);
 		
 		if (this.mode == Panel.MODE_TRACK) {
@@ -206,9 +207,9 @@ public class Panel extends JPanel{
 										Math.pow(p.y - agent.getY(), 2));
 				
 				// if clicking on this agent
-				if (dist < agent.getRadius()) {
-					this.track_id = agent.getID();
-					this.selectedAgent = agent;
+				if (dist < agent.getRadius() * scale) {
+					this.setTrack_id(agent.getID());
+					this.setSelectedAgent(agent);
 					return;
 				}
 			}
@@ -229,7 +230,7 @@ public class Panel extends JPanel{
 	}
 
 	public long getTrackingID() {
-		return this.track_id;
+		return this.getTrack_id();
 	}
 	
 	public int getOff_x() {
@@ -255,6 +256,18 @@ public class Panel extends JPanel{
 
 	public Environment getEnvironment() {
 		return this.environment;
+	}
+
+	public long getTrack_id() {
+		return track_id;
+	}
+
+	public void setTrack_id(long track_id) {
+		this.track_id = track_id;
+	}
+
+	public void setSelectedAgent(Agent selectedAgent) {
+		this.selectedAgent = selectedAgent;
 	}
  
  }

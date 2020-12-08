@@ -20,7 +20,7 @@ public class MouseInput implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		this.panel.mouseClicked(e.getX(), e.getY());		
+		this.panel.mouseClicked(e.getX(), e.getY());	
 	}
 
 	@Override

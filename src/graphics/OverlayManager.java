@@ -30,4 +30,12 @@ public class OverlayManager {
 			componant.render(g);
 		}
 	}
+	
+	public void checkClickComponants(int x, int y) {
+		for(OverlayPanel componant : componants) {
+			if(componant.isPointInPanel(x, y)) {
+				componant.clicked(x - componant.x, y - componant.y);
+			}
+		}
+	}
 }

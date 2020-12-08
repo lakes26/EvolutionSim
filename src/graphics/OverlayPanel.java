@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
-public class OverlayPanel {
+public abstract class OverlayPanel {
 	
 	private static Color OUTLINE = Color.black;
 	
@@ -62,6 +62,8 @@ public class OverlayPanel {
 		this.drawOutline(g, OUTLINE);
 		this.renderTitle(g);
 	}
+
+	public abstract void clicked(int x, int y);
 
 	public Dimension getDimension() {
 		return this.dimension;

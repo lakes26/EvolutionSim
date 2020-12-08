@@ -6,7 +6,8 @@ import java.util.List;
 
 public class OverlayManager {
 	
-	private static int LEFT_COLLUMN = 10;
+	private static int LEFT_COLUMN = 10;
+	private static int RIGHT_COLUMN = 1300;
 	
 	private int componantSpacing;
 	private int nextLocation;
@@ -25,7 +26,11 @@ public class OverlayManager {
 	public void renderOverlay(Graphics g) {
 		int yPos = componantSpacing;
 		for(OverlayPanel componant : componants) {
-			componant.setLocation(LEFT_COLLUMN, yPos);
+		    if(componant instanceof VariablesPanel) {
+		        componant.setLocation(RIGHT_COLUMN, componantSpacing);
+		    } else {
+		        componant.setLocation(LEFT_COLUMN, yPos);
+		    }
 			yPos += componant.getDimension().height + componantSpacing;
 			componant.render(g);
 		}

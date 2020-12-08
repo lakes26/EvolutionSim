@@ -19,14 +19,14 @@ public class Environment {
     private static int startingNumFoodSpawned = 60;
     private static int ticksToDecrementNumFoodSpawned = 10000;
     private static int minNumFoodSpawned = 40;
-    private static int ticksBetweenFoodSpawn = 50;
+    public static int ticksBetweenFoodSpawn = 50;
     private static int startingNumAgents = 60;
     private static int startingNumFood = 200;
     private static int minAgentSize = 14;
     private static int maxAgentSize = 15;
     private static int minAgentSpeed = 3;
     private static int maxAgentSpeed = 4;
-    private static float mutationRate = (float) 0.05;
+    public static float mutationRate = (float) 0.05;
     private static int maxAge = Integer.MAX_VALUE;
     private static int width = 800;
     private static int height = 800;

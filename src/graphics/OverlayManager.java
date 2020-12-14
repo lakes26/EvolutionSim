@@ -6,17 +6,19 @@ import java.util.List;
 
 public class OverlayManager {
 	
-	private static int LEFT_COLUMN = 10;
-	private static int RIGHT_COLUMN = 1300;
+	private int leftColumn;
+	private int rightColumn;
 	
 	private int componantSpacing;
-	private int nextLocation;
 	private List<OverlayPanel> componants;
+	private Panel panel;
 	
-	public OverlayManager() {
+	public OverlayManager(Panel p) {
+		panel = p;
+		this.leftColumn = 10;
+		this.rightColumn = p.getWidth() - 10;
 		componants = new ArrayList<>();
 		componantSpacing = 10;
-		nextLocation = componantSpacing;
 	}
 	
 	public void add(OverlayPanel componant) {
@@ -24,14 +26,20 @@ public class OverlayManager {
 	}
 	
 	public void renderOverlay(Graphics g) {
-		int yPos = componantSpacing;
+		int yPosLeft = componantSpacing;
+		int yPosRight = componantSpacing;
+		
+		this.leftColumn = 10;
+		this.rightColumn = panel.getWidth() - 10;
+		
 		for(OverlayPanel componant : componants) {
-		    if(componant instanceof VariablesPanel) {
-		        componant.setLocation(RIGHT_COLUMN, componantSpacing);
+		    if(componant instanceof VariablesPanel || componant instanceof PopulationStatisticPanel) {
+		        componant.setLocation(rightColumn - componant.getDimension().width - componantSpacing, yPosRight);
+		        yPosRight += componant.getDimension().height + componantSpacing;
 		    } else {
-		        componant.setLocation(LEFT_COLUMN, yPos);
-		    }
-			yPos += componant.getDimension().height + componantSpacing;
+		        componant.setLocation(leftColumn, yPosLeft);
+		        yPosLeft += componant.getDimension().height + componantSpacing;
+		    }	
 			componant.render(g);
 		}
 	}

@@ -5,6 +5,9 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -56,6 +59,13 @@ public class Renderer {
 		this.frame.setSize(width, height);
 		this.frame.setResizable(true);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		frame.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				panel.setWidth(frame.getWidth());
+				panel.setHeight(frame.getHeight());
+			}
+		});
 
 		frame.setVisible(true);
 

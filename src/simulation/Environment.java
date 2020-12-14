@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class Environment {
     private static int foodRadius = 10;
-    private static int startingNumFoodSpawned = 60;
+    private static int startingNumFoodSpawned = 40;
     private static int ticksToDecrementNumFoodSpawned = 10000;
     private static int minNumFoodSpawned = 40;
     public static int ticksBetweenFoodSpawn = 50;
@@ -208,4 +208,21 @@ public class Environment {
         float average = total / getAgents().size();
         return (int) average;
     }
+    
+    public float getAverageSpeed() {
+    	float totalSpeed = 0;
+    	for(int i = 0; i < this.agentList.size(); i++) {
+    		totalSpeed += this.agentList.get(i).getSpeed();
+    	}
+    	return totalSpeed / agentList.size();
+    }
+    
+    public float getAverageSize() {
+    	float totalSize = 0;
+    	for(int i = 0; i < this.agentList.size(); i++) {
+    		totalSize += this.agentList.get(i).getRadius();
+    	}
+    	return totalSize / agentList.size();
+    }
+
 }

@@ -69,13 +69,62 @@ public class Panel extends JPanel{
 		//neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(300, 300));
 		//neuralNetworkVisualizer.setLocation(25, 150);
 		this.environmentRenderer = new EnvironmentRenderer(this);
-		this.overlayManager = new OverlayManager();
+		this.overlayManager = new OverlayManager(this);
 		this.overlayManager.add(new StatisticPanel(this, 5, 15, 0));
 		this.overlayManager.add(new NeuralNetworkVisualizer(this, new Dimension(300, 300)));
 		this.overlayManager.add(new OffspringPanel(this, new Dimension(100, 300)));
 		this.overlayManager.add(new VariablesPanel(this, new Dimension(200, 500)));
+		this.overlayManager.add(new PopulationStatisticPanel(this));
 	}
 		
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public static int getModeTrack() {
+		return MODE_TRACK;
+	}
+
+	public static double getScrollSpeed() {
+		return scroll_speed;
+	}
+
+	public static double getZoomSpeed() {
+		return zoom_speed;
+	}
+
+	public int getSaveIndCountdown() {
+		return saveIndCountdown;
+	}
+
+	public StatisticPanel getStatisticPanel() {
+		return statisticPanel;
+	}
+
+	public EnvironmentRenderer getEnvironmentRenderer() {
+		return environmentRenderer;
+	}
+
+	public OverlayManager getOverlayManager() {
+		return overlayManager;
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {		
 		clear(g);		

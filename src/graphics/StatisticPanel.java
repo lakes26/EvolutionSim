@@ -59,6 +59,7 @@ public class StatisticPanel extends OverlayPanel {
 	@SuppressWarnings("exports")
 	@Override
 	public void render(Graphics g) {
+		super.render(g);
 		this.yOff = y + 5;
 		drawStrings(g, this.generateStrings(this.panel.getSelectedAgent()));
 	}

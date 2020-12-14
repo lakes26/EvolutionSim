@@ -22,7 +22,6 @@ public class OffspringPanel extends OverlayPanel{
 	}
 
 	private void drawAgentOffspringPanel(Graphics g, Agent agent) {
-		drawOutline(g, OUTLINE);
 		drawOffspring(g, agent);
 	}
 	
@@ -32,6 +31,11 @@ public class OffspringPanel extends OverlayPanel{
 		int widthGap = this.partition(this.dimension.width - (2 * borderBuffer), 2);
 		
 		for(int i = 0; i < offspring.size(); i++) {
+			if(offspring.get(i).getEnergy() <= 0) {
+				offspring.remove(i);
+				i--;
+				continue;
+			}
 			envRenderer.drawAgent(g, offspring.get(i), borderBuffer + this.x + widthGap, borderBuffer + this.y + (i + 1) * partition, scale);
 		}
 	}
@@ -41,7 +45,7 @@ public class OffspringPanel extends OverlayPanel{
 		Agent agent = this.panel.getSelectedAgent();
 		
 		if(agent != null && this.panel.getTrackingID() != -1) {
-			this.renderTitle(g);
+			super.render(g);
 			drawAgentOffspringPanel(g, agent);
 		}
 	}

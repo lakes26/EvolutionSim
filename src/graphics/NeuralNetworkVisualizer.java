@@ -100,7 +100,7 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 	
 	private void drawNodes(Graphics g, NeuralNetwork nn) {
 		int[] structure = nn.getStructure();
-		int widthGap = this.partition(this.dimension.height - (2 * borderBuffer), structure.length - 1);
+		int widthGap = this.partition(this.dimension.width - (2 * borderBuffer), structure.length - 1);
 		
 		int maxLayerSize = 0;
 		for(int i = 0; i < structure.length; i++) {

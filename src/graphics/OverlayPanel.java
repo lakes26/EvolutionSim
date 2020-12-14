@@ -59,13 +59,26 @@ public abstract class OverlayPanel {
 	}
 	
 	public void render(Graphics g) {
-		this.drawOutline(g, OUTLINE);
+		this.drawOutline(g, getOUTLINE());
 		this.renderTitle(g);
+	}
+	
+	public void fillBackgroud(Graphics g, Color color) {
+		g.setColor(color);
+		g.fillRect(x, y, dimension.width, dimension.height);
 	}
 
 	public abstract void clicked(int x, int y);
 
 	public Dimension getDimension() {
 		return this.dimension;
+	}
+
+	public static Color getOUTLINE() {
+		return OUTLINE;
+	}
+
+	public static void setOUTLINE(Color oUTLINE) {
+		OUTLINE = oUTLINE;
 	}
 }

@@ -20,10 +20,11 @@ public class Environment {
     private static int ticksToDecrementNumFoodSpawned = 10000;
     private static int minNumFoodSpawned = 40;
     public static int ticksBetweenFoodSpawn = 50;
+    public static double foodPerTick = 1.7;
     private static int startingNumAgents = 60;
     private static int startingNumFood = 200;
     private static int minAgentSize = 14;
-    private static int maxAgentSize = 15;
+    private static int maxAgentSize = 16;
     private static int minAgentSpeed = 3;
     private static int maxAgentSpeed = 4;
     public static float mutationRate = (float) 0.05;
@@ -98,11 +99,13 @@ public class Environment {
         }
         agentList.addAll(toAdd);
 
-        ticksUntilFoodSpawn-- ;
-        if (ticksUntilFoodSpawn <= 0) {
-            spawnRandomNewFood(numFoodSpawned);
-            ticksUntilFoodSpawn= ticksBetweenFoodSpawn;
-        }
+        //        ticksUntilFoodSpawn-- ;
+        //        if (ticksUntilFoodSpawn <= 0) {
+        //            spawnRandomNewFood(numFoodSpawned);
+        //            ticksUntilFoodSpawn= ticksBetweenFoodSpawn;
+        //        }
+
+        spawnInFood(); //spawns in foodPerTick food
 
         numTicks++ ;
         if (numTicks % ticksToDecrementNumFoodSpawned == 0) {
@@ -136,6 +139,16 @@ public class Environment {
             float y = rand.nextInt(height);
             float energy = 1;
             foodList.add(new Food(x, y, foodRadius, energy));
+        }
+    }
+
+    private void spawnInFood() {
+        double decimalPart = foodPerTick - Math.floor(foodPerTick);
+        float randDecider = rand.nextFloat();
+        if (randDecider < decimalPart) {
+            spawnRandomNewFood((int) Math.floor(foodPerTick) + 1);
+        } else {
+            spawnRandomNewFood((int) Math.floor(foodPerTick));
         }
     }
 

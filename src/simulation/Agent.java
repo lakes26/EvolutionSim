@@ -41,7 +41,7 @@ public class Agent extends CollidableObject implements Serializable{
         energy= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;
-        neuralNet= new NeuralNetwork(inputLength, 10, 3);
+        neuralNet= new NeuralNetwork(inputLength, 8, 3);
         DNA= new byte[3];
         rand.nextBytes(DNA);
         numOffspring = 0;

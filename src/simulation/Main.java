@@ -22,8 +22,8 @@ public class Main {
         } else {
             env.init();
         }
-        
-        int start_ticks = 200000;
+
+        int start_ticks = 20000;
         int print_every = 1000;
 
         for(int i = 0; i < start_ticks; ++i) {
@@ -52,8 +52,8 @@ public class Main {
             renderer.render();
 
             // wait
-            while (System.currentTimeMillis() - start_time < 1000 / frame_rate) {          	
-            	
+            while (System.currentTimeMillis() - start_time < 1000 / frame_rate) {
+
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
@@ -66,7 +66,7 @@ public class Main {
         }
     }
 
-	public static int getFramerate() {
-		return frame_rate;
-	}
+    public static int getFramerate() {
+        return frame_rate;
+    }
 }

@@ -20,22 +20,26 @@ public class Environment {
     private static int ticksToDecrementNumFoodSpawned = 10000;
     private static int minNumFoodSpawned = 40;
     public static int ticksBetweenFoodSpawn = 50;
-    public static double foodPerTick = 1.7;
+    
+    //public static double foodPerTick = 1.7;
+    public static double foodPerSecond = 40;
+    
     private static int startingNumAgents = 60;
     private static int startingNumFood = 200;
     private static int minAgentSize = 14;
     private static int maxAgentSize = 16;
-    private static int minAgentSpeed = 3;
-    private static int maxAgentSpeed = 4;
+    private static int minAgentSpeed = 50;
+    private static int maxAgentSpeed = 200;
     public static float mutationRate = (float) 0.05;
     private static int maxAge = Integer.MAX_VALUE;
     private static int width = 800;
     private static int height = 800;
+    public static double tickRate = 5;
 
-    private long numTicks;
+    private long numTicks = 0;
     private int numFoodSpawned;
 
-    private int tickrate, splitThreshold, deathThreshold, ticksUntilFoodSpawn;
+    private int splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 
     private ArrayList<Food> foodList;
     private ArrayList<Agent> agentList;
@@ -50,12 +54,10 @@ public class Environment {
     }
 
     public Environment() {
-        numTicks = 0;
         numFoodSpawned = Environment.startingNumFoodSpawned;
         foodList = new ArrayList<>();
         agentList = new ArrayList<>();
         rand = new Random();
-        tickrate = 1;
         splitThreshold = 3;
         deathThreshold = -2;
         ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
@@ -66,9 +68,9 @@ public class Environment {
         PriorityQueue<Integer> toRemove= new PriorityQueue<>(100, Collections.reverseOrder());
         List<Agent> toAdd= new ArrayList<>();
 
-        int limit= agentList.size();
-        for (int i= 0; i < limit; i++ ) {
-            Agent agent= agentList.get(i);
+        int limit = agentList.size();
+        for (int i = 0; i < limit; i++ ) {
+            Agent agent = agentList.get(i);
             agent.update(this);
 
             //	        for(int f = 0; f < foodList.size(); f++) {
@@ -81,7 +83,6 @@ public class Environment {
             //	        }
 
             if (agent.getEnergy() > splitThreshold) {
-                // 100 is spawndistance. probably shouldn't be a literal, but who cares
                 Agent newAgent= new Agent(agent, mutationRate);
                 toAdd.add(newAgent);
                 makeAgentNormal(newAgent);
@@ -105,9 +106,6 @@ public class Environment {
         //            ticksUntilFoodSpawn= ticksBetweenFoodSpawn;
         //        }
 
-        spawnInFood(); //spawns in foodPerTick food
-
-        numTicks++ ;
         if (numTicks % ticksToDecrementNumFoodSpawned == 0) {
             // System.out.print(String.format("%d:%d:%d:%d\n", this.numTicks, this.agentList.size(),
             // this.foodList.size(), this.numFoodSpawned));
@@ -116,6 +114,10 @@ public class Environment {
             }
             // maxAge++;
         }
+        
+        spawnInFood();
+
+        numTicks++;
     }
 
     public void init() {
@@ -143,6 +145,7 @@ public class Environment {
     }
 
     private void spawnInFood() {
+    	double foodPerTick = (float) this.foodPerSecond / tickRate;
         double decimalPart = foodPerTick - Math.floor(foodPerTick);
         float randDecider = rand.nextFloat();
         if (randDecider < decimalPart) {
@@ -189,10 +192,6 @@ public class Environment {
         return foodList;
     }
 
-    public int getTickrate() {
-        return tickrate;
-    }
-
     public int getWidth() {
         return width;
     }
@@ -203,15 +202,18 @@ public class Environment {
 
 
     public int getCarryingCapacity() {
-        float capacity;
-        float averageBurn= 0;
-        for (Agent a : getAgents()) {
-            averageBurn+= -1 * a.getBurnRate();
-        }
-        averageBurn= averageBurn / getAgents().size();
-        float foodPerTick= (float) numFoodSpawned / (float) ticksBetweenFoodSpawn;
-        capacity= foodPerTick / averageBurn;
-        return (int) capacity;
+    	// TODO this needs to be redone
+    	
+//        float capacity;
+//        float averageBurn= 0;
+//        for (Agent a : getAgents()) {
+//            averageBurn+= -1 * a.getBurnRate();
+//        }
+//        averageBurn= averageBurn / getAgents().size();
+//        float foodPerTick= (float) numFoodSpawned / (float) ticksBetweenFoodSpawn;
+//        capacity= foodPerTick / averageBurn;
+//        return (int) capacity;
+    	return -1;
     }
 
     public int averageGeneration() {

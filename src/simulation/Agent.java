@@ -12,42 +12,43 @@ public class Agent extends CollidableObject implements Serializable{
     private static final long serialVersionUID = 1L;
     protected float speed;
     protected float direction;
-    protected float energy;
-    protected float age;
     protected byte[] DNA;
     private boolean add;
     private Matrix inputLayer;
-    private float perceptiveRange;
-    private float firstRange;
     private NeuralNetwork neuralNet;
     private static Random rand= new Random();
-    private int numOffspring;
-    private int generation;
     private long id;
     private Matrix outputLayer;
     private List<Agent> offspring;
+    
+    private int numOffspring = 0;
+    protected float age = 0;
+    private int generation = 0;
+
+    protected float energy = 2;
+    private float perceptiveRange = 150;
+    private float firstRange = 75;
 
     private float fov = (float) (Math.PI/4);
     private static int verticalVisionSlices = 2;
     private static int horizontalVisionSlices = 4;
     private static int inputLength = verticalVisionSlices*horizontalVisionSlices;
-
+    
+    private static int turnSpeed = 2;
+    
     public Agent(float x, float y, float radius, float direction, float speed) {
         super(x, y, radius);
-        add= rand.nextBoolean();
-        this.direction= direction;
-        this.speed= speed;
-        age= 0;
-        energy= 0;
-        perceptiveRange= 150;
-        firstRange= perceptiveRange / 2;
-        neuralNet= new NeuralNetwork(inputLength, 8, 3);
-        DNA= new byte[3];
+        
+        this.add = rand.nextBoolean();
+        this.direction = direction;
+        this.speed = speed;
+
+        this.neuralNet= new NeuralNetwork(inputLength, 8, 3);
+        this.DNA = new byte[3];
         rand.nextBytes(DNA);
-        numOffspring = 0;
-        generation = 0;
-        generateID();
-        offspring = new ArrayList<>();
+        this.offspring = new ArrayList<>();
+
+        this.generateID();
     }
 
     /** Creates a duplicate of given agent, spawned a given distance from it's original
@@ -158,7 +159,7 @@ public class Agent extends CollidableObject implements Serializable{
                 energy+= closestFood.getEnergy();
             }
         }
-        age += (float) 1 / e.getTickrate();
+        age += (float) 1 / e.tickRate;
     }
 
     public float getEnergy() {
@@ -170,9 +171,9 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     protected void move(float dist) {
-        x+= Math.sin(direction) * speed * dist;
-        y+= Math.cos(direction) * speed * dist;
-        addEnergy(getBurnRate()*dist);
+        x+= Math.sin(direction) * speed * dist / Environment.tickRate;
+        y+= Math.cos(direction) * speed * dist / Environment.tickRate;
+        addEnergy((float) getBurnRate() * dist);
         keepInBounds();
     }
 
@@ -182,11 +183,11 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     protected void turnLeft() {
-        direction += Math.PI / 64;
+        direction += Math.PI / this.turnSpeed / Environment.tickRate;
     }
 
     protected void turnRight() {
-        direction -= Math.PI / 64;
+        direction -= Math.PI / this.turnSpeed / Environment.tickRate;
     }
 
     protected Food findClosestFood(List<Food> food) {
@@ -286,7 +287,7 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     public float getBurnRate() {
-        return (float) (-getSpeed() * 0.002 * Math.log(getRadius()));
+        return (float) (-getSpeed() * 0.002 * Math.log(getRadius()) / Environment.tickRate);
     }
 
     public int getNumOffspring() {

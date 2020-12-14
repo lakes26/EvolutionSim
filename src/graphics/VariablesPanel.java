@@ -14,8 +14,11 @@ public class VariablesPanel extends OverlayPanel {
         super(p, d);
         this.setTitle("Variables");
         this.sliders = new ArrayList<SliderComponent>();
-        this.createSlider("Ticks Between Food Spawn", 0, 200, Environment.ticksBetweenFoodSpawn);
+        //this.createSlider("Ticks Between Food Spawn", 0, 200, Environment.ticksBetweenFoodSpawn);
+        
+        this.createSlider("Food Per Second", 0, 200, (float) Environment.foodPerSecond);
         this.createSlider("Mutation Rate", 0, 2, Environment.mutationRate);
+        this.createSlider("Tick Rate", 1, 120, (float) Environment.tickRate);
     }
 
     @Override
@@ -70,7 +73,10 @@ public class VariablesPanel extends OverlayPanel {
     
     public void updateValues() {
         Environment.mutationRate = getSlider("Mutation Rate").getCurrValue();
-        Environment.ticksBetweenFoodSpawn = (int) getSlider("Ticks Between Food Spawn").getCurrValue();
+        //Environment.ticksBetweenFoodSpawn = (int) getSlider("Ticks Between Food Spawn").getCurrValue();
+        Environment.foodPerSecond = getSlider("Food Per Second").getCurrValue();
+        Environment.tickRate = getSlider("Tick Rate").getCurrValue();
+        
     }
     
 

@@ -83,6 +83,7 @@ public class Environment {
                 // 100 is spawndistance. probably shouldn't be a literal, but who cares
                 Agent newAgent= new Agent(agent, mutationRate);
                 toAdd.add(newAgent);
+                makeAgentNormal(newAgent);
                 agent.setEnergy(0);
             }
 
@@ -208,21 +209,27 @@ public class Environment {
         float average = total / getAgents().size();
         return (int) average;
     }
-    
+
     public float getAverageSpeed() {
-    	float totalSpeed = 0;
-    	for(int i = 0; i < this.agentList.size(); i++) {
-    		totalSpeed += this.agentList.get(i).getSpeed();
-    	}
-    	return totalSpeed / agentList.size();
+        float totalSpeed = 0;
+        for(int i = 0; i < agentList.size(); i++) {
+            totalSpeed += agentList.get(i).getSpeed();
+        }
+        return totalSpeed / agentList.size();
     }
-    
+
     public float getAverageSize() {
-    	float totalSize = 0;
-    	for(int i = 0; i < this.agentList.size(); i++) {
-    		totalSize += this.agentList.get(i).getRadius();
-    	}
-    	return totalSize / agentList.size();
+        float totalSize = 0;
+        for(int i = 0; i < agentList.size(); i++) {
+            totalSize += agentList.get(i).getRadius();
+        }
+        return totalSize / agentList.size();
+    }
+
+    private void makeAgentNormal(Agent a) {
+        a.setRadius(Math.min(Math.max(a.getRadius(), minAgentSize), maxAgentSize));
+        a.setSpeed(Math.min(Math.max(a.getSpeed(), minAgentSpeed), maxAgentSpeed));
+        a.keepInBounds();
     }
 
 }

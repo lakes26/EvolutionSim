@@ -71,7 +71,7 @@ public class Agent extends CollidableObject implements Serializable{
         neuralNet= agent.getNeuralNet().mutate(mutationRate);
         DNA= agent.mutateDNA();
         direction= 0;
-        speed = (float) (agent.getSpeed() + mutationRate * (float) rand.nextGaussian());
+        speed = agent.getSpeed() + mutationRate * (float) rand.nextGaussian();
         age= 0;
         perceptiveRange= 150;
         firstRange= perceptiveRange / 2;
@@ -176,7 +176,7 @@ public class Agent extends CollidableObject implements Serializable{
         keepInBounds();
     }
 
-    private void keepInBounds() {
+    public void keepInBounds() {
         x= Math.min(Math.max(x, 0), 800);
         y= Math.min(Math.max(y, 0), 800);
     }
@@ -301,6 +301,13 @@ public class Agent extends CollidableObject implements Serializable{
         return neuralNet;
     }
 
+    public void setSpeed(float speed) {
+        this.speed= speed;
+    }
+
+    public void setRadius(float rad) {
+        radius= rad;
+    }
 
     public Matrix getOutputLayer() {
         return outputLayer;

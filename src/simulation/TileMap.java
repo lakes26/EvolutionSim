@@ -56,6 +56,15 @@ public class TileMap {
 		}
 	}
 	
+	// make a vertical line splitting the environment
+	public void addSplitWall(int thickness) {	
+		for (int i = 0; i < height; ++i) {
+			for (int j = (int) (-thickness / 2); j < (int) ((float) thickness / 2 + .5); ++j) {
+				tiles[width / 2 + j][i] = 1;
+			}
+		}
+	}
+	
 	public boolean inWall(float x, float y) {
 		// outside of tilemap boundaries is considered in a wall
 		if (x < 0 || x > width * tileSize || y < 0 || y > height * tileSize) {

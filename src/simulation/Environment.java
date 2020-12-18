@@ -14,7 +14,7 @@ import java.util.PriorityQueue;
 import java.util.Random;
 
 public class Environment {
-	public static double foodPerSecond = 20;
+	public static double foodPerSecond = 10;
     public static double tickRate = 5;
     
     // TODO add more than one mutation rate for different things
@@ -27,8 +27,8 @@ public class Environment {
 
     private static int tileSize = 50;
     
-    private static int width = 1200;
-    private static int height = 1200;
+    private static int width = 600;
+    private static int height = 600;
     
     private static int startingNumAgents = 60;
     private static int splitThreshold = 3;
@@ -48,6 +48,8 @@ public class Environment {
     private TileMap tileMap;
 
     public Environment() {
+    	assert(width % tileSize == 0 && height % tileSize == 0);
+    	
         foodList = new ArrayList<>();
         agentList = new ArrayList<>();
         rand = new Random();
@@ -177,8 +179,9 @@ public class Environment {
     
     public void setupTileMap() {
     	tileMap = new TileMap(width / tileSize, height / tileSize, tileSize);
-        //tileMap.addBorder();
-        tileMap.randomTiles(.1);
+        //tileMap.addSplitWall(7);
+    	//tileMap.addBorder();
+        tileMap.randomTiles(.2);
     }
     
     public float getCarryingCapacity() {

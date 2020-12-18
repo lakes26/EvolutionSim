@@ -8,7 +8,7 @@ public class Main {
 	
     private static final double frameRate = 30;
 
-    private static int startTicks = 250000;
+    private static int startTicks = 100000;
     private static int printEvery = 1000;
     		
     public static void main(String[] args) {
@@ -28,20 +28,30 @@ public class Main {
 //        }
 //        scnr.close();        
         
+    	if (startTicks > 0) {
+    		System.out.printf("Simulating %d ticks\n", startTicks);
+    	}
+    	
         long startTime = System.currentTimeMillis();
-
+        	
         for(int i = 1; i < startTicks + 1; ++i) {
             env.tick();
 
             if (i % printEvery == 0) {
-                long curTime = System.currentTimeMillis();
+                if (env.getAgents().size() == 0) {
+                	System.out.println("All agents dead, exiting early");
+                	System.exit(0);
+                }
+            	
+            	long curTime = System.currentTimeMillis();
                 
                 double propDone = (double) i / startTicks;
                 double secRemaining = (double) (curTime - startTime) / 1000 * (1 / propDone - 1);
                 double minRemaining = Math.floor(secRemaining / 60);
                 secRemaining -= 60 * minRemaining;
                 
-            	System.out.printf("%.1f %% - %.0f m %.0f s remaining - Agents: %d, Food: %d, Average Generation: %d\n ", 100 * propDone, minRemaining, secRemaining, env.getAgents().size(),
+            	System.out.printf("%.1f %% - %.0f m %.0f s remaining - Agents: %d, Food: %d, Average Generation: %d\n ", 
+            			100 * propDone, minRemaining, secRemaining, env.getAgents().size(),
                     env.getFood().size(), env.averageGeneration());
             }
         }

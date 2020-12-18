@@ -32,6 +32,7 @@ public class PopulationStatisticPanel extends OverlayPanel{
 		
 		returnList.add(String.format("Average Speed: %.2f", panel.getEnvironment().getAverageSpeed()));
 		returnList.add(String.format("Average Size: %.2f", panel.getEnvironment().getAverageSize()));
+		returnList.add(String.format("Seconds Simulated: %.2f", panel.getEnvironment().getSecondsElapsed()));
 		
 		return returnList;
 	}
@@ -55,7 +56,6 @@ public class PopulationStatisticPanel extends OverlayPanel{
 		drawStrings(g, this.generateStrings());
 	}
 	
-
 	private void setFont(Font font) {
 		this.font = font;	
 	}

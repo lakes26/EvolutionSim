@@ -12,6 +12,7 @@ public class KeyInput implements KeyListener {
 	private Panel panel;
 	
 	private boolean pausePressed = false;
+	private boolean resetPressed = false;
 	
 	public KeyInput(Panel panel) {
 		keys = new boolean[256];
@@ -54,6 +55,7 @@ public class KeyInput implements KeyListener {
 		if (this.keys[KeyEvent.VK_P]) {
             this.panel.keyAction(KeyEvent.VK_P);
         }
+		// pause
 		if (this.keys[KeyEvent.VK_SPACE]) {
 			if (!this.pausePressed) {
 				this.panel.keyAction(KeyEvent.VK_SPACE);
@@ -61,6 +63,15 @@ public class KeyInput implements KeyListener {
 			}
 		} else {
 			this.pausePressed = false;
+		}
+		// reset
+		if (this.keys[KeyEvent.VK_R]) {
+			if (!this.resetPressed) {
+				this.panel.keyAction(KeyEvent.VK_R);
+				this.resetPressed = true;
+			}
+		} else {
+			this.resetPressed = false;
 		}
 	}
 	

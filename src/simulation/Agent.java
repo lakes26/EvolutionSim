@@ -29,16 +29,16 @@ public class Agent extends CollidableObject implements Serializable{
     private float perceptiveRange = 150;
     private float firstRange = 75;
 
-    private float fov = (float) (Math.PI/4);
+    private float fov = (float) (Math.PI / 4);
     private static int verticalVisionSlices = 2;
     private static int horizontalVisionSlices = 4;
     private static int inputLength = verticalVisionSlices*horizontalVisionSlices;
     
     private static int turnSpeed = 2;
     
-    public Agent(float x, float y, float radius, float direction, float speed) {
+    public Agent(float x, float y, float radius, float direction, float speed, TileMap tileMap) {
         super(x, y, radius);
-        
+    	
         this.add = rand.nextBoolean();
         this.direction = direction;
         this.speed = speed;
@@ -54,28 +54,49 @@ public class Agent extends CollidableObject implements Serializable{
     /** Creates a duplicate of given agent, spawned a given distance from it's original
      *
      * @param agent         agent to be duplicated
-     * @param spawnDistance distance duplicate will be spawned away from original */
-    public Agent(Agent agent, float mutationRate) {
-        super(agent.getX() + rand.nextFloat() * 200 - 100,
-            agent.getY() + rand.nextFloat() * 200 - 100, agent.getRadius());
-        int toAdd= rand.nextInt(4);
-        if (toAdd < 4) {
-            add= agent.add;
-        } else {
-            add= !agent.add;
+     * @param spawnDistance distance duplicate will be spawned away from original
+     * @param tileMap  		tileMap to make sure the new agent isn't in a wall */
+    public Agent(Agent agent, float mutationRate, TileMap tileMap, int envWidth, int envHeight) {
+    	super(0, 0, agent.getRadius());
+    
+        // loop until we have valid x and y coordinates
+    	float x, y;
+    	while (true) {
+        	x = agent.getX() + rand.nextFloat() * 200 - 100;
+        	y = agent.getY() + rand.nextFloat() * 200 - 100;
+        	
+        	x = Math.max(x, 0);
+        	x = Math.min(x, (float) envWidth);
+        	y = Math.max(y, 0);
+        	y = Math.min(y, (float) envHeight);
+        	
+        	// make sure agent isn't spawning in wall
+        	if (!tileMap.inWall(x, y)) {
+            	this.x = x;
+            	this.y = y;
+        		break;
+        	}
         }
-        radius= (float) (agent.getRadius() + mutationRate * rand.nextGaussian());
+        
+        int toAdd = rand.nextInt(4);
+        if (toAdd < 4) {
+            add = agent.add;
+        } else {
+            add = !agent.add;
+        }
+        radius = (float) (agent.getRadius() + mutationRate * rand.nextGaussian());
         if (radius < 1) {
             radius= 1;
         }
-        add= agent.add;
-        neuralNet= agent.getNeuralNet().mutate(mutationRate);
-        DNA= agent.mutateDNA();
-        direction= 0;
+        
+        add = agent.add;
+        neuralNet = agent.getNeuralNet().mutate(mutationRate);
+        DNA = agent.mutateDNA();
+        direction = (float) (rand.nextFloat() * 2 * Math.PI);
         speed = agent.getSpeed() + mutationRate * (float) rand.nextGaussian();
-        age= 0;
-        perceptiveRange= 150;
-        firstRange= perceptiveRange / 2;
+        age = 0;
+        perceptiveRange = 150;
+        firstRange = perceptiveRange / 2;
         generation = agent.generation + 1;
         agent.numOffspring++;
         numOffspring = 0;
@@ -85,7 +106,7 @@ public class Agent extends CollidableObject implements Serializable{
 
         agent.offspring.add(this);
     }
-
+    
     public static long getSerialversionuid() {
         return serialVersionUID;
     }

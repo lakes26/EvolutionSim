@@ -13,16 +13,15 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
-
 public class Environment {
-    private static int foodRadius = 10;
-    private static int startingNumFoodSpawned = 40;
-    private static int ticksToDecrementNumFoodSpawned = 10000;
-    private static int minNumFoodSpawned = 40;
-    public static int ticksBetweenFoodSpawn = 50;
-    
-    //public static double foodPerTick = 1.7;
-    public static double foodPerSecond = 40;
+	public static double foodPerSecond = 40;
+    public static float mutationRate = (float) 0.05;
+    public static double tickRate = 5;
+	
+	private static int foodRadius = 10;
+    private static float foodEnergy = (float) 1;
+	
+    private static int tileSize = 50;
     
     private static int startingNumAgents = 60;
     private static int startingNumFood = 200;
@@ -30,44 +29,36 @@ public class Environment {
     private static int maxAgentSize = 16;
     private static int minAgentSpeed = 50;
     private static int maxAgentSpeed = 200;
-    public static float mutationRate = (float) 0.05;
     private static int maxAge = Integer.MAX_VALUE;
     private static int width = 800;
     private static int height = 800;
-    public static double tickRate = 5;
-
-    private long numTicks = 0;
-    private int numFoodSpawned;
+   
+    private float secondsElapsed = 0;
     private boolean paused = false;
     
-    private int splitThreshold, deathThreshold, ticksUntilFoodSpawn;
+    private int splitThreshold = 3;
+    private int deathThreshold = -2;
 
     private ArrayList<Food> foodList;
     private ArrayList<Agent> agentList;
     private Random rand;
-
-    public int getSplitThreshold() {
-        return splitThreshold;
-    }
-
-    public void setSplitThreshold(int splitThreshold) {
-        this.splitThreshold= splitThreshold;
-    }
+    private TileMap tileMap;
 
     public Environment() {
-        numFoodSpawned = Environment.startingNumFoodSpawned;
         foodList = new ArrayList<>();
         agentList = new ArrayList<>();
         rand = new Random();
-        splitThreshold = 3;
-        deathThreshold = -2;
-        ticksUntilFoodSpawn = ticksBetweenFoodSpawn;
+        
+        // setup the tilemap
+        tileMap = new TileMap(width / tileSize, height / tileSize, tileSize);
+        tileMap.addBorder();
+        tileMap.randomTiles(.05);
     }
 
     public void tick() {
     	if (!this.paused) {
     		PriorityQueue<Integer> toRemove= new PriorityQueue<>(100, Collections.reverseOrder());
-            List<Agent> toAdd= new ArrayList<>();
+            List<Agent> toAdd = new ArrayList<>();
 
             int limit = agentList.size();
             for (int i = 0; i < limit; i++ ) {
@@ -75,7 +66,7 @@ public class Environment {
                 agent.update(this);
 
                 if (agent.getEnergy() > splitThreshold) {
-                    Agent newAgent= new Agent(agent, mutationRate);
+                    Agent newAgent = new Agent(agent, mutationRate, tileMap, width, height);
                     toAdd.add(newAgent);
                     makeAgentNormal(newAgent);
                     agent.setEnergy(0);
@@ -86,22 +77,18 @@ public class Environment {
                 }
             }
 
+            // remove dead agents
             while (!toRemove.isEmpty()) {
-                int index= toRemove.poll();
+                int index = toRemove.poll();
                 agentList.remove(index);
             }
             agentList.addAll(toAdd);
-
-            if (numTicks % ticksToDecrementNumFoodSpawned == 0) {
-                // System.out.print(String.format("%d:%d:%d:%d\n", this.numTicks, this.agentList.size(),
-                if (numFoodSpawned > Environment.minNumFoodSpawned) {
-                    numFoodSpawned-- ;
-                }
-            }
             
+            // add food
             spawnInFood();
             
-            numTicks++;
+            // add to seconds elapsed
+            secondsElapsed += 1 / tickRate;
     	}
     }
 
@@ -113,20 +100,22 @@ public class Environment {
     }
 
     public Agent createRandomAgent() {
-        float x= rand.nextInt(width);
-        float y= rand.nextInt(height);
-        float radius= rand.nextInt(maxAgentSize - minAgentSize) + minAgentSize;
-        float speed= rand.nextInt(maxAgentSpeed - minAgentSpeed) + minAgentSpeed;
-        return new Agent(x, y, radius, 0, speed);
-    }
-
-    public void spawnRandomNewFood(int amt) {
-        for(int i = 0; i < amt; i++) {
-            float x = rand.nextInt(width);
-            float y = rand.nextInt(height);
-            float energy = 1;
-            foodList.add(new Food(x, y, foodRadius, energy));
+        float radius = rand.nextInt(maxAgentSize - minAgentSize) + minAgentSize;
+        float speed = rand.nextInt(maxAgentSpeed - minAgentSpeed) + minAgentSpeed;
+        
+        // loop until we have valid x and y coordinates
+    	float x, y;
+    	while (true) {
+        	x = rand.nextInt(width);
+        	y = rand.nextInt(height);
+        	
+        	// make sure agent isn't spawning in wall
+        	if (!tileMap.inWall(x, y)) {
+        		break;
+        	}
         }
+        
+        return new Agent(x, y, radius, 0, speed, tileMap);
     }
 
     private void spawnInFood() {
@@ -140,6 +129,23 @@ public class Environment {
         }
     }
 
+    public void spawnRandomNewFood(int amt) {    	
+    	for(int i = 0; i < amt; i++) {            
+            // loop until food not spawning in wall
+            float x, y;
+    		while (true) {
+            	x = rand.nextInt(width);
+                y = rand.nextInt(height);
+                
+                if (!tileMap.inWall(x, y)) {
+                	break;
+                }
+            }
+            
+            foodList.add(new Food(x, y, foodRadius, foodEnergy));
+        }
+    }
+    
     public void saveToFile(String filename) throws FileNotFoundException, IOException {
         File file = new File(filename);
         file.delete();
@@ -169,19 +175,18 @@ public class Environment {
         }
     }
     
-    public int getCarryingCapacity() {
-    	// TODO this needs to be redone
+    public float getCarryingCapacity() {
+        // TODO this needs to be redone this doesn't seem to work
     	
-//        float capacity;
-//        float averageBurn= 0;
+//    	float averageBurn = 0;
 //        for (Agent a : getAgents()) {
-//            averageBurn+= -1 * a.getBurnRate();
+//            averageBurn += -1 * a.getBurnRate();
 //        }
-//        averageBurn= averageBurn / getAgents().size();
-//        float foodPerTick= (float) numFoodSpawned / (float) ticksBetweenFoodSpawn;
-//        capacity= foodPerTick / averageBurn;
-//        return (int) capacity;
-    	return -1;
+//        averageBurn = averageBurn / getAgents().size();
+//        
+//        return (float) (foodPerSecond / averageBurn);
+    	
+    	return (float) -1;
     }
 
     public int averageGeneration() {
@@ -215,6 +220,22 @@ public class Environment {
         a.keepInBounds();
     }
     
+    public void resetAgents() {
+    	this.agentList.clear();
+    }
+    
+    public void resetFood() {
+    	this.foodList.clear();
+    }
+    
+    public void resetSecondsElapsed() {
+    	this.secondsElapsed = 0;
+    }
+    
+    public float getSecondsElapsed() {
+    	return secondsElapsed;
+    }
+    
     public void togglePaused() {
     	this.paused = !this.paused;
     }
@@ -237,5 +258,17 @@ public class Environment {
 
     public boolean getPaused() {
     	return this.paused;
+    }
+    
+    public int getSplitThreshold() {
+        return splitThreshold;
+    }
+
+    public void setSplitThreshold(int splitThreshold) {
+        this.splitThreshold= splitThreshold;
+    }
+    
+    public TileMap getTileMap() {
+    	return tileMap;
     }
 }

@@ -184,6 +184,13 @@ public class Panel extends JPanel{
 		if (action == KeyEvent.VK_SPACE) {
 			this.environment.togglePaused();
 		}
+		// restart
+		if (action == KeyEvent.VK_R) {
+			environment.resetAgents();
+			environment.resetFood();
+			environment.resetSecondsElapsed();
+			environment.init();
+		}
 	}
 
 	public void mouseClicked(int x, int y) {

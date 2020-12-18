@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import simulation.Agent;
 import simulation.Food;
+import simulation.TileMap;
 
 public class EnvironmentRenderer {
 	
@@ -17,10 +18,37 @@ public class EnvironmentRenderer {
 	}
 	
 	public void renderEnvironment(Graphics g) {
+		drawTilemap(g);
 		drawFood(g);
 		drawAgents(g);
 		drawOutline(g);
 		drawPause(g);
+	}
+	
+	// draw the tilemap
+	private void drawTilemap(Graphics g) {
+		TileMap tileMap = this.panel.getEnvironment().getTileMap();
+		int[][] tiles = tileMap.getTiles();
+		int tileSize = tileMap.getTileSize();
+		float scale = panel.getScale();
+		int off_x = panel.getOff_x();
+		int off_y = panel.getOff_y();
+		
+		int size = (int) (scale * tileSize);
+		
+		for (int i = 0; i < tileMap.getWidth(); ++i) {
+			for (int j = 0; j < tileMap.getHeight(); ++j) {				
+				if (tiles[i][j] == 1) {
+					int x = (int) (scale * (tileSize * i - off_x));
+					int y = (int) (scale * (tileSize * j - off_y));
+
+					g.setColor(Color.DARK_GRAY);
+					g.fillRect(x, y, size, size);
+					g.setColor(Color.BLACK);
+					g.drawRect(x, y, size, size);
+				}
+			}
+		}
 	}
 	
 	// draw the pause text if paused

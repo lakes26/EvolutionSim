@@ -11,19 +11,20 @@ public class Main {
     public static void main(String[] args) {
         // start the environment
         Environment env = new Environment();
-        Scanner scnr = new Scanner(System.in);
-        System.out.print("Load from save.txt?: ");
-        if (scnr.nextLine().equalsIgnoreCase("y")) {
-            try {
-                env.loadFromFile("save.txt");
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-        } else {
-            env.init();
-        }
-        scnr.close();
+    	env.init();
 
+//        Scanner scnr = new Scanner(System.in);
+//        System.out.print("Load from save.txt?: ");
+//        if (scnr.nextLine().equalsIgnoreCase("y")) {
+//            try {
+//                env.loadFromFile("save.txt");
+//            } catch (Exception e1) {
+//                e1.printStackTrace();
+//                System.exit(1);
+//            }
+//        }
+//        scnr.close();        
+        
         int startTicks = 0;
         int printEvery = 1000;
 
@@ -31,13 +32,13 @@ public class Main {
             env.tick();
 
             if (i % printEvery == 0) {
-                System.out.printf("%d/%d: %d agents, %d food CC: %d Generation: %d\n ", i, startTicks, env.getAgents().size(),
+                System.out.printf("%d/%d: %d agents, %d food CC: %.1f, Generation: %d\n ", i, startTicks, env.getAgents().size(),
                     env.getFood().size(), env.getCarryingCapacity(), env.averageGeneration());
             }
         }
 
         // setup the renderer
-        Renderer renderer= new Renderer();
+        Renderer renderer = new Renderer();
         renderer.init(env);
 
         // render forever

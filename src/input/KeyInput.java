@@ -8,8 +8,10 @@ import graphics.Panel;
 //handles key input
 public class KeyInput implements KeyListener {
 	private boolean[] keys;
-
+	
 	private Panel panel;
+	
+	private boolean pausePressed = false;
 	
 	public KeyInput(Panel panel) {
 		keys = new boolean[256];
@@ -43,7 +45,6 @@ public class KeyInput implements KeyListener {
 		if (this.keys[KeyEvent.VK_I]) {
             this.panel.keyAction(KeyEvent.VK_I);
         }
-		
 		if (this.keys[KeyEvent.VK_F]) {
 			this.panel.keyAction(KeyEvent.VK_F);
 		}
@@ -53,6 +54,14 @@ public class KeyInput implements KeyListener {
 		if (this.keys[KeyEvent.VK_P]) {
             this.panel.keyAction(KeyEvent.VK_P);
         }
+		if (this.keys[KeyEvent.VK_SPACE]) {
+			if (!this.pausePressed) {
+				this.panel.keyAction(KeyEvent.VK_SPACE);
+				this.pausePressed = true;
+			}
+		} else {
+			this.pausePressed = false;
+		}
 	}
 	
 	@Override

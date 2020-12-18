@@ -24,7 +24,7 @@ public class Main {
         }
         scnr.close();
 
-        int startTicks = 100000;
+        int startTicks = 0;
         int printEvery = 1000;
 
         for(int i = 0; i < startTicks; ++i) {

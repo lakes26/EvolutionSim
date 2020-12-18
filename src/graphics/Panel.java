@@ -5,25 +5,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.datatransfer.SystemFlavorMap;
 import java.awt.event.KeyEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import input.KeyInput;
 import simulation.Agent;
 import simulation.Environment;
-import simulation.Food;
 
 public class Panel extends JPanel{
 	private static final long serialVersionUID = -310866009165515372L;
@@ -34,20 +20,23 @@ public class Panel extends JPanel{
 	private static final double scroll_speed = 20;
 	private static final double zoom_speed = 0.03;
 	
+	private int off_x = 0;
+	private int off_y = 0;
+	private float scale = (float) 1;
+	
 	private Environment environment;
-
-	private int width, height, off_x, off_y, env_width, env_height, mode, saveIndCountdown;
-	private float scale;
+	
+	private int width, height, env_width, env_height, mode, saveIndCountdown;
 	private Agent selectedAgent;
 	
 	private long track_id;
 
 	private StatisticPanel statisticPanel;
-	//private NeuralNetworkVisualizer neuralNetworkVisualizer;
 	private EnvironmentRenderer environmentRenderer;
 	private OverlayManager overlayManager;
 
-	
+	//private NeuralNetworkVisualizer neuralNetworkVisualizer;
+
 	public Panel(Environment environment, int width, int height) {
 		this.environment = environment;
 		
@@ -56,18 +45,16 @@ public class Panel extends JPanel{
 		this.width = width;
 		this.height = height;
 		
-		this.scale = (float) 1;
-		this.off_x = 0;
-		this.off_y = 0;
-		
 		this.env_height = this.environment.getHeight();
 		this.env_width = this.environment.getWidth();
 		
 		this.mode = getModeFree();
 		this.setTrack_id(-1);
 		this.statisticPanel = new StatisticPanel(this, 5, 15, 0);
+		
 		//neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(300, 300));
 		//neuralNetworkVisualizer.setLocation(25, 150);
+		
 		this.environmentRenderer = new EnvironmentRenderer(this);
 		this.overlayManager = new OverlayManager(this);
 		this.overlayManager.add(new StatisticPanel(this, 5, 15, 0));
@@ -75,54 +62,6 @@ public class Panel extends JPanel{
 		this.overlayManager.add(new OffspringPanel(this, new Dimension(100, 300)));
 		this.overlayManager.add(new VariablesPanel(this, new Dimension(200, 500)));
 		this.overlayManager.add(new PopulationStatisticPanel(this));
-	}
-		
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	public static int getModeTrack() {
-		return MODE_TRACK;
-	}
-
-	public static double getScrollSpeed() {
-		return scroll_speed;
-	}
-
-	public static double getZoomSpeed() {
-		return zoom_speed;
-	}
-
-	public int getSaveIndCountdown() {
-		return saveIndCountdown;
-	}
-
-	public StatisticPanel getStatisticPanel() {
-		return statisticPanel;
-	}
-
-	public EnvironmentRenderer getEnvironmentRenderer() {
-		return environmentRenderer;
-	}
-
-	public OverlayManager getOverlayManager() {
-		return overlayManager;
 	}
 
 	@Override
@@ -197,8 +136,9 @@ public class Panel extends JPanel{
 		}
 	}
 
-	// process a pan or zoom
+	// process keyboard actions
 	public void keyAction(int action) {
+		// process a pan or zoom
 		if (action == KeyEvent.VK_UP) {
 			this.off_y -= Panel.scroll_speed / this.scale;
 		}
@@ -240,6 +180,10 @@ public class Panel extends JPanel{
                 e.printStackTrace();
             } 
 		}
+		// pause
+		if (action == KeyEvent.VK_SPACE) {
+			this.environment.togglePaused();
+		}
 	}
 
 	public void mouseClicked(int x, int y) {
@@ -271,7 +215,6 @@ public class Panel extends JPanel{
 	}
 
 	public int getMode() {
-		// TODO Auto-generated method stub
 		return this.mode;
 	}
 
@@ -290,7 +233,6 @@ public class Panel extends JPanel{
 	public int getOff_y() {
 		return off_y;
 	}
-
 
 	public int getEnv_width() {
 		return env_width;
@@ -319,7 +261,52 @@ public class Panel extends JPanel{
 	public void setSelectedAgent(Agent selectedAgent) {
 		this.selectedAgent = selectedAgent;
 	}
- 
- }
+	
+	public int getWidth() {
+		return width;
+	}
 
+	public void setWidth(int width) {
+		this.width = width;
+	}
 
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public static int getModeTrack() {
+		return MODE_TRACK;
+	}
+
+	public static double getScrollSpeed() {
+		return scroll_speed;
+	}
+
+	public static double getZoomSpeed() {
+		return zoom_speed;
+	}
+
+	public int getSaveIndCountdown() {
+		return saveIndCountdown;
+	}
+
+	public StatisticPanel getStatisticPanel() {
+		return statisticPanel;
+	}
+
+	public EnvironmentRenderer getEnvironmentRenderer() {
+		return environmentRenderer;
+	}
+
+	public OverlayManager getOverlayManager() {
+		return overlayManager;
+	}
+}

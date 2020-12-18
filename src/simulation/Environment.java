@@ -38,7 +38,8 @@ public class Environment {
 
     private long numTicks = 0;
     private int numFoodSpawned;
-
+    private boolean paused = false;
+    
     private int splitThreshold, deathThreshold, ticksUntilFoodSpawn;
 
     private ArrayList<Food> foodList;
@@ -64,60 +65,44 @@ public class Environment {
     }
 
     public void tick() {
+    	if (!this.paused) {
+    		PriorityQueue<Integer> toRemove= new PriorityQueue<>(100, Collections.reverseOrder());
+            List<Agent> toAdd= new ArrayList<>();
 
-        PriorityQueue<Integer> toRemove= new PriorityQueue<>(100, Collections.reverseOrder());
-        List<Agent> toAdd= new ArrayList<>();
+            int limit = agentList.size();
+            for (int i = 0; i < limit; i++ ) {
+                Agent agent = agentList.get(i);
+                agent.update(this);
 
-        int limit = agentList.size();
-        for (int i = 0; i < limit; i++ ) {
-            Agent agent = agentList.get(i);
-            agent.update(this);
+                if (agent.getEnergy() > splitThreshold) {
+                    Agent newAgent= new Agent(agent, mutationRate);
+                    toAdd.add(newAgent);
+                    makeAgentNormal(newAgent);
+                    agent.setEnergy(0);
+                }
 
-            //	        for(int f = 0; f < foodList.size(); f++) {
-            //	            Food food = foodList.get(f);
-            //	            if(agent.isCollidingWith(food)) {
-            //	                agent.addEnergy(food.getEnergy());
-            //	                foodList.remove(f);
-            //	                f--;
-            //	            }
-            //	        }
-
-            if (agent.getEnergy() > splitThreshold) {
-                Agent newAgent= new Agent(agent, mutationRate);
-                toAdd.add(newAgent);
-                makeAgentNormal(newAgent);
-                agent.setEnergy(0);
+                if (agent.getEnergy() < deathThreshold || agent.getAge() >= maxAge) {
+                    toRemove.add(i);
+                }
             }
 
-            if (agent.getEnergy() < deathThreshold || agent.getAge() >= maxAge) {
-                toRemove.add(i);
+            while (!toRemove.isEmpty()) {
+                int index= toRemove.poll();
+                agentList.remove(index);
             }
-        }
+            agentList.addAll(toAdd);
 
-        while (!toRemove.isEmpty()) {
-            int index= toRemove.poll();
-            agentList.remove(index);
-        }
-        agentList.addAll(toAdd);
-
-        //        ticksUntilFoodSpawn-- ;
-        //        if (ticksUntilFoodSpawn <= 0) {
-        //            spawnRandomNewFood(numFoodSpawned);
-        //            ticksUntilFoodSpawn= ticksBetweenFoodSpawn;
-        //        }
-
-        if (numTicks % ticksToDecrementNumFoodSpawned == 0) {
-            // System.out.print(String.format("%d:%d:%d:%d\n", this.numTicks, this.agentList.size(),
-            // this.foodList.size(), this.numFoodSpawned));
-            if (numFoodSpawned > Environment.minNumFoodSpawned) {
-                numFoodSpawned-- ;
+            if (numTicks % ticksToDecrementNumFoodSpawned == 0) {
+                // System.out.print(String.format("%d:%d:%d:%d\n", this.numTicks, this.agentList.size(),
+                if (numFoodSpawned > Environment.minNumFoodSpawned) {
+                    numFoodSpawned-- ;
+                }
             }
-            // maxAge++;
-        }
-        
-        spawnInFood();
-
-        numTicks++;
+            
+            spawnInFood();
+            
+            numTicks++;
+    	}
     }
 
     public void init() {
@@ -183,24 +168,7 @@ public class Environment {
             }
         }
     }
-
-    public ArrayList<Agent> getAgents() {
-        return agentList;
-    }
-
-    public ArrayList<Food> getFood() {
-        return foodList;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-
+    
     public int getCarryingCapacity() {
     	// TODO this needs to be redone
     	
@@ -246,5 +214,28 @@ public class Environment {
         a.setSpeed(Math.min(Math.max(a.getSpeed(), minAgentSpeed), maxAgentSpeed));
         a.keepInBounds();
     }
+    
+    public void togglePaused() {
+    	this.paused = !this.paused;
+    }
+    
+    public ArrayList<Agent> getAgents() {
+        return agentList;
+    }
 
+    public ArrayList<Food> getFood() {
+        return foodList;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public boolean getPaused() {
+    	return this.paused;
+    }
 }

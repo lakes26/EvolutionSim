@@ -1,7 +1,7 @@
 package graphics;
 
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
@@ -20,6 +20,17 @@ public class EnvironmentRenderer {
 		drawFood(g);
 		drawAgents(g);
 		drawOutline(g);
+		drawPause(g);
+	}
+	
+	// draw the pause text if paused
+	private void drawPause(Graphics g) {
+		if (this.panel.getEnvironment().getPaused()) {
+			// TODO
+			g.setColor(Color.BLACK);
+		    g.setFont(new Font("TimesNewRoman", Font.PLAIN, 40));
+		    g.drawString("PAUSED", this.panel.getWidth() / 2 - 100, this.panel.getHeight() * 3 / 4);
+		}
 	}
 	
 	private void drawOutline(Graphics g) {
@@ -29,7 +40,6 @@ public class EnvironmentRenderer {
 	}
 	
 	private void drawAgents(Graphics g) {
-		
 		ArrayList<Agent> agents = panel.getEnvironment().getAgents();
 		
 		for(int i = 0; i < agents.size(); i++){
@@ -56,7 +66,6 @@ public class EnvironmentRenderer {
 		g.setColor(Color.BLACK);
 		g.drawLine(x, y, (int) (x + (Math.sin(agent.getDirection()) * radius * scale)), (int) (y + (Math.cos(agent.getDirection()) * radius * scale)));
 	}
-
 
 	private void drawFood(Graphics g) {
 		ArrayList<Food> foods = panel.getEnvironment().getFood();

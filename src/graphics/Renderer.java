@@ -1,16 +1,9 @@
 package graphics;
 
 import java.awt.Dimension;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
@@ -19,7 +12,6 @@ import javax.swing.JFrame;
 import input.KeyInput;
 import input.MouseInput;
 import simulation.Environment;
-import simulation.Main;
 
 public class Renderer {	
 	private Environment environment;
@@ -28,18 +20,12 @@ public class Renderer {
 	private KeyInput keyInput;
 	private MouseListener mouseListener;
 	private MouseInput mouseInput;
-	
-	private double framesToRender;
-	
+		
 	public Renderer() {
 
 	}
 	
-	/**
-	 * 
-	 * @param environment Environment to be rendered
-	 */
-	
+	// setup renderer
 	public void init(Environment environment) {
 				
 		this.environment = environment;
@@ -68,7 +54,6 @@ public class Renderer {
 		});
 
 		frame.setVisible(true);
-
 		
 		// setup the panel
 		panel.setFocusable(true);
@@ -79,13 +64,9 @@ public class Renderer {
 		this.panel.addKeyListener(this.keyInput);
 		this.mouseInput = new MouseInput(this.panel);
 		this.panel.addMouseListener(this.mouseInput);
-		
-		this.framesToRender = 0;
 	}
 	
-	/**
-	 * Render the environment
-	 */
+	// render the enviornment
 	public void render() {
 		// check for key input
 		this.keyInput.tick();
@@ -95,12 +76,10 @@ public class Renderer {
 		
 		// rerender the game
 		this.panel.repaint();
-		
 	}
 	
 	@SuppressWarnings("exports")
 	public JFrame getFrame() {
 		return frame;
 	}
-	
 }

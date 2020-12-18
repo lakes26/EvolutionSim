@@ -38,7 +38,6 @@ public class Renderer {
 		
 		this.panel = new Panel(environment, width, height);
 		this.frame = new JFrame();
-	
 		
 		// setup the JFrame		
 		this.frame.add(this.panel);		

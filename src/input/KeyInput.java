@@ -12,7 +12,8 @@ public class KeyInput implements KeyListener {
 	private Panel panel;
 	
 	private boolean pausePressed = false;
-	private boolean resetPressed = false;
+	private static int resetFrames = 60;
+	private int resetCounter = 0;
 	
 	public KeyInput(Panel panel) {
 		keys = new boolean[256];
@@ -66,12 +67,14 @@ public class KeyInput implements KeyListener {
 		}
 		// reset
 		if (this.keys[KeyEvent.VK_R]) {
-			if (!this.resetPressed) {
+			if (this.resetCounter == this.resetFrames) {
 				this.panel.keyAction(KeyEvent.VK_R);
-				this.resetPressed = true;
+				this.resetCounter = 0;
 			}
+			
+			++this.resetCounter;
 		} else {
-			this.resetPressed = false;
+			this.resetCounter = 0;
 		}
 	}
 	

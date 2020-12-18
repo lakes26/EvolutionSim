@@ -57,9 +57,15 @@ public class TileMap {
 	}
 	
 	public boolean inWall(float x, float y) {
+		// outside of tilemap boundaries is considered in a wall
+		if (x < 0 || x > width * tileSize || y < 0 || y > height * tileSize) {
+			return true;
+		}
+		
 		int tileX = (int) (x / tileSize);
 		int tileY = (int) (y / tileSize);
 		
+		// on the border should be considered within the outermost tile
 		if (tileX == width) {
 			--tileX;
 		}

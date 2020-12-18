@@ -5,9 +5,12 @@ import java.util.Scanner;
 import graphics.Renderer;
 
 public class Main {
+	
+    private static final double frameRate = 30;
 
-    private static final int frameRate = 30;
-
+    private static int startTicks = 250000;
+    private static int printEvery = 1000;
+    		
     public static void main(String[] args) {
         // start the environment
         Environment env = new Environment();
@@ -25,33 +28,42 @@ public class Main {
 //        }
 //        scnr.close();        
         
-        int startTicks = 0;
-        int printEvery = 1000;
+        long startTime = System.currentTimeMillis();
 
-        for(int i = 0; i < startTicks; ++i) {
+        for(int i = 1; i < startTicks + 1; ++i) {
             env.tick();
 
             if (i % printEvery == 0) {
-                System.out.printf("%d/%d: %d agents, %d food CC: %.1f, Generation: %d\n ", i, startTicks, env.getAgents().size(),
-                    env.getFood().size(), env.getCarryingCapacity(), env.averageGeneration());
+                long curTime = System.currentTimeMillis();
+                
+                double propDone = (double) i / startTicks;
+                double secRemaining = (double) (curTime - startTime) / 1000 * (1 / propDone - 1);
+                double minRemaining = Math.floor(secRemaining / 60);
+                secRemaining -= 60 * minRemaining;
+                
+            	System.out.printf("%.1f %% - %.0f m %.0f s remaining - Agents: %d, Food: %d, Average Generation: %d\n ", 100 * propDone, minRemaining, secRemaining, env.getAgents().size(),
+                    env.getFood().size(), env.averageGeneration());
             }
         }
 
+        // set the tickrate to match the framerate
+        env.setTickRate(frameRate);
+        
         // setup the renderer
         Renderer renderer = new Renderer();
         renderer.init(env);
 
         // render forever
-        long startTime;
+        long frameTimer;
         while (true) {
             // start the timer
-        	startTime = System.currentTimeMillis();
+        	frameTimer = System.currentTimeMillis();
 
             // render the next frame
             renderer.render();
 
             // wait
-            while (System.currentTimeMillis() - startTime < 1000 / frameRate) {
+            while (System.currentTimeMillis() - frameTimer < 1000 / frameRate) {
 
                 try {
                     Thread.sleep(1);
@@ -65,7 +77,7 @@ public class Main {
         }
     }
 
-    public static int getFramerate() {
+    public static double getFramerate() {
         return frameRate;
     }
 }

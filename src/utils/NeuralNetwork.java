@@ -22,7 +22,6 @@ public class NeuralNetwork implements Serializable{
 		}
 	}
 	
-
 	public NeuralNetwork() {
 		this.weights = null;
 		this.biases = null;
@@ -40,6 +39,8 @@ public class NeuralNetwork implements Serializable{
 	}
 	
 	public NeuralNetwork mutate(float mutationRate) {
+		// TODO better mutation
+		
 		NeuralNetwork nn = new NeuralNetwork();
 		nn.weights = new Matrix[this.weights.length];
 		nn.biases = new Matrix[this.biases.length];

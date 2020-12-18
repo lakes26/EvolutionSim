@@ -45,8 +45,8 @@ public class Panel extends JPanel{
 		this.width = width;
 		this.height = height;
 		
-		this.env_height = this.environment.getHeight();
-		this.env_width = this.environment.getWidth();
+		this.env_height = Environment.getHeight();
+		this.env_width = Environment.getWidth();
 		
 		this.mode = getModeFree();
 		this.setTrack_id(-1);
@@ -76,9 +76,23 @@ public class Panel extends JPanel{
 		
 		//draw save indicator if saving
 		drawSaveIndicator(g);
+
+		// draw tracking indicator if tracking an active agent
+		drawTrackingIndicator(g);
+	}
+	
+	private void drawTrackingIndicator(Graphics g) {
+		int size = 15;  // TODO make class variables
+		int indicatorWidth = 2;
 		
-		//statisticPanel.draw(g);
-		//neuralNetworkVisualizer.draw(g);
+		if (this.mode == Panel.MODE_TRACK && this.getTrack_id() != -1) {
+			g.setColor(Color.RED);
+			
+			g.fillRect((width - indicatorWidth) / 2, (height - indicatorWidth) / 2 - size, 
+					   indicatorWidth, 2 * size);
+			g.fillRect((width - indicatorWidth) / 2 - size, (height - indicatorWidth) / 2,
+					   2 * size, indicatorWidth);
+		}
 	}
 	
 	// go from graphical coords to environment coords
@@ -123,8 +137,8 @@ public class Panel extends JPanel{
 				if (agent.getID() == this.getTrack_id()) {
 					dead = false;
 										
-					this.off_x = (int) (agent.getX() + agent.getRadius() / 2 - (this.width) / this.scale / 2); 
-					this.off_y = (int) (agent.getY() + agent.getRadius() / 2 - (this.height) / this.scale / 2 ); 
+					this.off_x = (int) (agent.getX() - this.width / this.scale / 2); 
+					this.off_y = (int) (agent.getY() - this.height / this.scale / 2); 
 					
 					break;
 				}
@@ -186,6 +200,7 @@ public class Panel extends JPanel{
 		}
 		// restart
 		if (action == KeyEvent.VK_R) {
+			environment.setupTileMap();
 			environment.resetAgents();
 			environment.resetFood();
 			environment.resetSecondsElapsed();

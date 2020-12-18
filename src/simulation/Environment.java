@@ -14,31 +14,34 @@ import java.util.PriorityQueue;
 import java.util.Random;
 
 public class Environment {
-	public static double foodPerSecond = 40;
-    public static float mutationRate = (float) 0.05;
+	public static double foodPerSecond = 20;
     public static double tickRate = 5;
-	
+    
+    // TODO add more than one mutation rate for different things
+    public static float mutationRate = (float) 0.05;
+    //private static float 
+    
 	private static int foodRadius = 10;
     private static float foodEnergy = (float) 1;
-	
+    private static int startingNumFood = 200;
+
     private static int tileSize = 50;
     
+    private static int width = 1200;
+    private static int height = 1200;
+    
     private static int startingNumAgents = 60;
-    private static int startingNumFood = 200;
+    private static int splitThreshold = 3;
+    private static int deathThreshold = -2;
     private static int minAgentSize = 14;
     private static int maxAgentSize = 16;
     private static int minAgentSpeed = 50;
     private static int maxAgentSpeed = 200;
     private static int maxAge = Integer.MAX_VALUE;
-    private static int width = 800;
-    private static int height = 800;
-   
+    
     private float secondsElapsed = 0;
     private boolean paused = false;
     
-    private int splitThreshold = 3;
-    private int deathThreshold = -2;
-
     private ArrayList<Food> foodList;
     private ArrayList<Agent> agentList;
     private Random rand;
@@ -49,12 +52,9 @@ public class Environment {
         agentList = new ArrayList<>();
         rand = new Random();
         
-        // setup the tilemap
-        tileMap = new TileMap(width / tileSize, height / tileSize, tileSize);
-        tileMap.addBorder();
-        tileMap.randomTiles(.05);
-    }
-
+        setupTileMap();
+    }  
+    
     public void tick() {
     	if (!this.paused) {
     		PriorityQueue<Integer> toRemove= new PriorityQueue<>(100, Collections.reverseOrder());
@@ -175,8 +175,14 @@ public class Environment {
         }
     }
     
+    public void setupTileMap() {
+    	tileMap = new TileMap(width / tileSize, height / tileSize, tileSize);
+        //tileMap.addBorder();
+        tileMap.randomTiles(.1);
+    }
+    
     public float getCarryingCapacity() {
-        // TODO this needs to be redone this doesn't seem to work
+        // TODO this needs to be redone -- this doesn't seem to work
     	
 //    	float averageBurn = 0;
 //        for (Agent a : getAgents()) {
@@ -248,11 +254,11 @@ public class Environment {
         return foodList;
     }
 
-    public int getWidth() {
+    public static int getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public static int getHeight() {
         return height;
     }
 
@@ -265,10 +271,14 @@ public class Environment {
     }
 
     public void setSplitThreshold(int splitThreshold) {
-        this.splitThreshold= splitThreshold;
+        this.splitThreshold = splitThreshold;
     }
     
     public TileMap getTileMap() {
     	return tileMap;
     }
+
+	public void setTickRate(double tickRate) {
+		Environment.tickRate = tickRate;		
+	}
 }

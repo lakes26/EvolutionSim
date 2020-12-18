@@ -14,11 +14,15 @@ public class VariablesPanel extends OverlayPanel {
         super(p, d);
         this.setTitle("Variables");
         this.sliders = new ArrayList<SliderComponent>();
-        //this.createSlider("Ticks Between Food Spawn", 0, 200, Environment.ticksBetweenFoodSpawn);
-        
+
+        this.createSlider("Tick Rate", 1, 120, (float) Environment.tickRate);        
         this.createSlider("Food Per Second", 0, 200, (float) Environment.foodPerSecond);
-        this.createSlider("Mutation Rate", 0, 2, Environment.mutationRate);
-        this.createSlider("Tick Rate", 1, 120, (float) Environment.tickRate);
+        this.createSlider("Trait Mutation Rate", 0, 1, Environment.traitMutationRate);
+        this.createSlider("Network Mutation Probability", 0, 1, Environment.networkMutationProbability);
+        this.createSlider("Network Perturbation Probability", 0, 1, Environment.networkPerturbationProbability);
+        this.createSlider("Network Perturbation Amount", 0, 3, Environment.networkPerturbationAmount);     
+        this.createSlider("Network New Value Probability", 0, 1, Environment.networkNewValueProbability);
+        this.createSlider("Network Value Random Range", 0, 10, Environment.networkValueRandRange);
     }
 
     @Override
@@ -29,7 +33,6 @@ public class VariablesPanel extends OverlayPanel {
             }
         }
         updateValues();
-        
     }
     
     @Override
@@ -45,11 +48,12 @@ public class VariablesPanel extends OverlayPanel {
     }
     
     public void arrangeSliders() {
-        int partition = this.partition(this.dimension.height - (2 * borderBuffer), sliders.size()) + 1;
-        int currPart = partition/2;
+        int partition = this.partition(this.dimension.height - (2 * borderBuffer) - 30, 
+        							   sliders.size()) + 1;
+        int currPart = partition / 2;
         for(SliderComponent slider : sliders) {
             slider.setX(40);
-            slider.setY(currPart);
+            slider.setY(30 + currPart);
             currPart += partition;
         }
     }
@@ -72,12 +76,13 @@ public class VariablesPanel extends OverlayPanel {
     }
     
     public void updateValues() {
-        Environment.mutationRate = getSlider("Mutation Rate").getCurrValue();
-        //Environment.ticksBetweenFoodSpawn = (int) getSlider("Ticks Between Food Spawn").getCurrValue();
-        Environment.foodPerSecond = getSlider("Food Per Second").getCurrValue();
         Environment.tickRate = getSlider("Tick Rate").getCurrValue();
-        
+        Environment.foodPerSecond = getSlider("Food Per Second").getCurrValue();
+    	Environment.traitMutationRate = getSlider("Trait Mutation Rate").getCurrValue();
+    	Environment.networkMutationProbability = getSlider("Network Mutation Probability").getCurrValue();
+    	Environment.networkPerturbationProbability = getSlider("Network Perturbation Probability").getCurrValue();
+    	Environment.networkPerturbationAmount = getSlider("Network Perturbation Amount").getCurrValue();
+    	Environment.networkNewValueProbability = getSlider("Network New Value Probability").getCurrValue();
+    	Environment.networkValueRandRange = getSlider("Network Value Random Range").getCurrValue();
     }
-    
-
 }

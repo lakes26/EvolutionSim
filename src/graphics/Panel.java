@@ -60,7 +60,7 @@ public class Panel extends JPanel{
 		this.overlayManager.add(new StatisticPanel(this, 5, 15, 0));
 		this.overlayManager.add(new NeuralNetworkVisualizer(this, new Dimension(300, 300)));
 		this.overlayManager.add(new OffspringPanel(this, new Dimension(100, 300)));
-		this.overlayManager.add(new VariablesPanel(this, new Dimension(200, 500)));
+		this.overlayManager.add(new VariablesPanel(this, new Dimension(220, 500)));
 		this.overlayManager.add(new PopulationStatisticPanel(this));
 	}
 

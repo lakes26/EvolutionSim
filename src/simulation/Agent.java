@@ -11,7 +11,7 @@ import utils.NeuralNetwork;
 public class Agent extends CollidableObject implements Serializable{
     private static final long serialVersionUID = 1L;
     
-    private static Random rand= new Random();
+    private static Random rand = new Random();
     
     protected float speed;
     protected float direction;
@@ -31,19 +31,28 @@ public class Agent extends CollidableObject implements Serializable{
 
     protected float energy = 2;
     private static float burnRate = (float) 0.002;
+    private static float burnPerSecond = (float) 0;
     
     private static float baseMoveSpeed = (float) 1;
     private static float baseTurnSpeed = (float) 1;
     
-    private static float perceptiveRange = 200;
-    private static int verticalVisionSlices = 2;
-    private static int horizontalVisionSlices = 3;
-    private static float fov = (float) (Math.PI / 2);
-    private static int outputLength = 2;
-    private static int inputLength = 2 * verticalVisionSlices * horizontalVisionSlices;
+    private static float perceptiveRangeFood = 200;
+    private static int verticalVisionSlicesFood = 2;
+    private static int horizontalVisionSlicesFood = 3;
+    private static float fovFood = (float) (Math.PI / 2);
 
-    private static int turnSpeed = 2;
+    private static float perceptiveRangeWall = 200;
+    private static int verticalVisionSlicesWall = 1;
+    private static int horizontalVisionSlicesWall = 7;
+    private static float fovWall = (float) (Math.PI);
     
+    private static int outputLength = 2;
+    private static int inputLength = verticalVisionSlicesFood * horizontalVisionSlicesFood
+    								 + verticalVisionSlicesWall * horizontalVisionSlicesWall;
+
+    private static int turnSpeed = 1;
+    
+    // create a new agent
     public Agent(float x, float y, float radius, float direction, float speed, TileMap tileMap) {
         super(x, y, radius);
     	
@@ -51,7 +60,7 @@ public class Agent extends CollidableObject implements Serializable{
         this.direction = direction;
         this.speed = speed;
 
-        this.neuralNet = new NeuralNetwork(inputLength, 4, outputLength);
+        this.neuralNet = new NeuralNetwork(inputLength, outputLength);
         this.DNA = new byte[3];
         rand.nextBytes(DNA);
         this.offspring = new ArrayList<>();
@@ -64,7 +73,7 @@ public class Agent extends CollidableObject implements Serializable{
      * @param agent         agent to be duplicated
      * @param spawnDistance distance duplicate will be spawned away from original
      * @param tileMap  		tileMap to make sure the new agent isn't in a wall */
-    public Agent(Agent agent, float mutationRate, TileMap tileMap, int envWidth, int envHeight) {
+    public Agent(Agent agent, TileMap tileMap, int envWidth, int envHeight) {
     	super(0, 0, agent.getRadius());
     
         // loop until we have valid x and y coordinates
@@ -93,28 +102,35 @@ public class Agent extends CollidableObject implements Serializable{
             add = !agent.add;
         }
 
-        radius = mutateRadius(agent.getRadius(), mutationRate);
+        radius = mutateRadius(agent.getRadius());
+        speed = mutateSpeed(agent.getSpeed());
         
         add = agent.add;
-        neuralNet = agent.getNeuralNet().mutate(mutationRate);
+        neuralNet = agent.getNeuralNet().mutate();
         DNA = agent.mutateDNA();
         direction = (float) (rand.nextFloat() * 2 * Math.PI);
-        speed = agent.getSpeed() + mutationRate * (float) rand.nextGaussian();
 
         generation = agent.generation + 1;
         agent.numOffspring++;
 
+        agent.offspring.add(this);
         offspring = new ArrayList<>();
 
         generateID();
-
-        agent.offspring.add(this);
     }
     
     // return a new radius mutated from param oldRadius
-    private float mutateRadius(float oldRadius, float mutationRate) {
-    	float radius = (float) (oldRadius + mutationRate * rand.nextGaussian());
-    	return radius >= 1 ? radius : 1;
+    private float mutateRadius(float oldRadius) {
+    	float radius = (float) (oldRadius + Environment.traitMutationRate * rand.nextGaussian());
+    	radius = Math.max(Math.min(radius, Environment.maxAgentSize), Environment.minAgentSize);
+    	return radius;
+    }
+    
+    // return a new radius mutated from param oldSpeed
+    private float mutateSpeed(float oldSpeed) {
+    	float speed = oldSpeed + Environment.traitMutationRate * (float) rand.nextGaussian();
+    	speed = Math.max(Math.min(speed, Environment.maxAgentSpeed), Environment.minAgentSpeed);
+    	return speed;    	
     }
     
     // update the agent
@@ -154,11 +170,15 @@ public class Agent extends CollidableObject implements Serializable{
         	turn(-Agent.baseTurnSpeed);
         }
         
-        // always move the agent
+        // move the agent
         move(Agent.baseMoveSpeed, e.getTileMap());
-        
+//        boolean networkMove = outputLayer.get(2) > Agent.networkThreshold;
+//        if (networkMove) {
+//            move(Agent.baseMoveSpeed, e.getTileMap());        	
+//        }
+
         // check if we are on food
-        Food closestFood= findClosestFood(e.getFood());
+        Food closestFood = findClosestFood(e.getFood());
         if (closestFood != null) {
             if (isCollidingWith(closestFood)) {
                 e.getFood().remove(closestFood);
@@ -167,6 +187,9 @@ public class Agent extends CollidableObject implements Serializable{
         }
         
         age += (float) 1 / Environment.tickRate;
+    
+        // burn a base amount of food
+        this.energy -= burnPerSecond;
     }
 
     protected void move(float dist, TileMap tileMap) {
@@ -220,7 +243,7 @@ public class Agent extends CollidableObject implements Serializable{
 
     // turn, positive for left, negative for right
     protected void turn(float amount) {
-        direction += Math.PI * amount / Agent.turnSpeed / Environment.tickRate;
+        direction += Math.PI * amount * Agent.turnSpeed / Environment.tickRate;
     }
 
     protected Food findClosestFood(List<Food> food) {
@@ -264,11 +287,11 @@ public class Agent extends CollidableObject implements Serializable{
 
     // setup the input layer for the neural network
     private void pollEnvironment(Environment e) {        
-        int totalSlices = verticalVisionSlices * horizontalVisionSlices;       
-        float[] inputArray = new float[2 * totalSlices];
-        float fovLeft = -fov / 2;
-        float fovStep = fov / horizontalVisionSlices;
-        float rangeStep = perceptiveRange / verticalVisionSlices;
+        int totalSlicesFood = verticalVisionSlicesFood * horizontalVisionSlicesFood;       
+        float[] inputArray = new float[inputLength];
+        float fovLeftFood = -fovFood / 2;
+        float fovStepFood = fovFood / horizontalVisionSlicesFood;
+        float rangeStepFood = perceptiveRangeFood / verticalVisionSlicesFood;
         
         // process food inputs
         ArrayList<Food> food = e.getFood();
@@ -276,12 +299,12 @@ public class Agent extends CollidableObject implements Serializable{
             float dir = normalizeDirection(directionOf(f));
             float angle = normalizeDirection(direction - dir);
             float dist = getDistance(f);
-            int vSlice = (int) (dist / rangeStep);
-            int hSlice = (int) ((angle + fovLeft) / fovStep);
+            int vSlice = (int) (dist / rangeStepFood);
+            int hSlice = (int) ((angle + fovLeftFood) / fovStepFood);
             
-            if (vSlice >= 0 && vSlice < verticalVisionSlices) {
-                if (hSlice >= 0 && hSlice < horizontalVisionSlices) {
-                    int index = vSlice + hSlice * verticalVisionSlices;
+            if (vSlice >= 0 && vSlice < verticalVisionSlicesFood) {
+                if (hSlice >= 0 && hSlice < horizontalVisionSlicesFood) {
+                    int index = vSlice + hSlice * verticalVisionSlicesFood;
                     inputArray[index] += 1;
                 }
             }
@@ -289,19 +312,23 @@ public class Agent extends CollidableObject implements Serializable{
         
         // process wall inputs 
         //    just checks the middle of each slice
+        float fovLeftWall = -fovWall / 2;
+        float fovStepWall = fovWall / horizontalVisionSlicesWall;
+        float rangeStepWall = perceptiveRangeWall / verticalVisionSlicesWall;
+        
         // loop thru vision slices
         TileMap tileMap = e.getTileMap();
-        for (float i = 0; i < horizontalVisionSlices; ++i) {
-        	for (float j = 0; j < verticalVisionSlices; ++j) {
+        for (float i = 0; i < horizontalVisionSlicesWall; ++i) {
+        	for (float j = 0; j < verticalVisionSlicesWall; ++j) {
         		// get the x and y of the center of the slice
-        		float centerAngle = normalizeDirection(direction + fovLeft + ((float) .5 + i) * fovStep);  // get the angle of the center of the slice
-        		float dist = ((float) .5 + j) * rangeStep;  // get the distance to the center of the slice
+        		float centerAngle = normalizeDirection(direction + fovLeftWall + ((float) .5 + i) * fovStepWall);  // get the angle of the center of the slice
+        		float dist = ((float) .5 + j) * rangeStepWall;  // get the distance to the center of the slice
 
         		float xCenter = this.x + (float) (Math.sin(centerAngle) * dist);
                 float yCenter = this.y + (float) (Math.cos(centerAngle) * dist);
         		
         		if (tileMap.inWall(xCenter, yCenter)) {
-        			inputArray[(int) (totalSlices + i + verticalVisionSlices * j)] = 1;
+        			inputArray[(int) (totalSlicesFood + i + verticalVisionSlicesWall * j)] = 1;
         		}
         	}
         }
@@ -345,10 +372,6 @@ public class Agent extends CollidableObject implements Serializable{
 
     public static int getInputLength() {
         return inputLength;
-    }
-
-    public float getPerceptiveRange() {
-        return perceptiveRange;
     }
 
     public static Random getRand() {

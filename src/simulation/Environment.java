@@ -14,12 +14,15 @@ import java.util.PriorityQueue;
 import java.util.Random;
 
 public class Environment {
-	public static double foodPerSecond = 10;
-    public static double tickRate = 5;
+	public static double foodPerSecond = 20;
+    public static double tickRate = 8;
     
-    // TODO add more than one mutation rate for different things
-    public static float mutationRate = (float) 0.05;
-    //private static float 
+    public static float traitMutationRate = (float) 0.1;  // rate for changing traits such as size
+    public static float networkMutationProbability = (float) 0.8;  // probability network will be changed
+    public static float networkPerturbationProbability = (float) 0.5;  // probability of weight getting perturbed
+    public static float networkPerturbationAmount = (float) 0.1;  // scaler for weight perturbation
+    public static float networkNewValueProbability = (float) 0.05;  // probability of weight getting a new value
+    public static float networkValueRandRange = (float) 3;  // range for new weights and biases    
     
 	private static int foodRadius = 10;
     private static float foodEnergy = (float) 1;
@@ -27,16 +30,16 @@ public class Environment {
 
     private static int tileSize = 50;
     
-    private static int width = 600;
-    private static int height = 600;
+    private static int width = 1200;
+    private static int height = 1200;
     
     private static int startingNumAgents = 60;
     private static int splitThreshold = 3;
     private static int deathThreshold = -2;
-    private static int minAgentSize = 14;
-    private static int maxAgentSize = 16;
-    private static int minAgentSpeed = 50;
-    private static int maxAgentSpeed = 200;
+    public static int minAgentSize = 5;
+    public static int maxAgentSize = 50;
+    public static int minAgentSpeed = 10;
+    public static int maxAgentSpeed = 500;
     private static int maxAge = Integer.MAX_VALUE;
     
     private float secondsElapsed = 0;
@@ -68,7 +71,7 @@ public class Environment {
                 agent.update(this);
 
                 if (agent.getEnergy() > splitThreshold) {
-                    Agent newAgent = new Agent(agent, mutationRate, tileMap, width, height);
+                    Agent newAgent = new Agent(agent, tileMap, width, height);
                     toAdd.add(newAgent);
                     makeAgentNormal(newAgent);
                     agent.setEnergy(0);
@@ -181,7 +184,7 @@ public class Environment {
     	tileMap = new TileMap(width / tileSize, height / tileSize, tileSize);
         //tileMap.addSplitWall(7);
     	//tileMap.addBorder();
-        tileMap.randomTiles(.2);
+        tileMap.randomTiles(.1);
     }
     
     public float getCarryingCapacity() {
@@ -198,13 +201,13 @@ public class Environment {
     	return (float) -1;
     }
 
-    public int averageGeneration() {
+    public float averageGeneration() {
         float total = 0;
         for (Agent a: getAgents()) {
             total += a.getGeneration();
         }
-        float average = total / getAgents().size();
-        return (int) average;
+
+        return total / getAgents().size();
     }
 
     public float getAverageSpeed() {

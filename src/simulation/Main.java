@@ -8,8 +8,8 @@ public class Main {
 	
     private static final double frameRate = 30;
 
-    private static int startTicks = 100000;
-    private static int printEvery = 1000;
+    private static int startTicks = 250000;
+    private static int printEvery = 100;
     		
     public static void main(String[] args) {
         // start the environment
@@ -52,10 +52,19 @@ public class Main {
                 
             	System.out.printf("%.1f %% - %.0f m %.0f s remaining - Agents: %d, Food: %d, Average Generation: %d\n ", 
             			100 * propDone, minRemaining, secRemaining, env.getAgents().size(),
-                    env.getFood().size(), env.averageGeneration());
+                    env.getFood().size(), (int) env.averageGeneration());
             }
         }
 
+        // print info
+        if (startTicks > 0) { 
+        	double secElapsed = (double) System.currentTimeMillis() / startTime;
+        	double minElapsed = Math.floor(secElapsed / 60);
+        	secElapsed -= 60 * minElapsed;
+        	
+            System.out.printf("Simulated %d ticks in %.0f m %.0f s\n", startTicks, minElapsed, secElapsed);
+        }
+        
         // set the tickrate to match the framerate
         env.setTickRate(frameRate);
         

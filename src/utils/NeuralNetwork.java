@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import simulation.Environment;
+
 public class NeuralNetwork implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -38,18 +40,22 @@ public class NeuralNetwork implements Serializable{
 		return vector;
 	}
 	
-	public NeuralNetwork mutate(float mutationRate) {
+	public NeuralNetwork mutate() {
 		// TODO better mutation
 		
+		float mutationRate = Environment.traitMutationRate;
+		
 		NeuralNetwork nn = new NeuralNetwork();
+		nn.structure = this.structure.clone();
 		nn.weights = new Matrix[this.weights.length];
 		nn.biases = new Matrix[this.biases.length];
-		nn.structure = this.structure.clone();
 		
+		// mutate each weight and bias matrix
 		for(int i = 0; i < this.weights.length; i++) {
-			nn.weights[i] = Matrix.mutate(this.weights[i], mutationRate);
-			nn.biases[i] = Matrix.mutate(this.biases[i], mutationRate);
+			nn.weights[i] = Matrix.mutate(this.weights[i]);
+			nn.biases[i] = Matrix.mutate(this.biases[i]);
 		}
+		
 		return nn;
 	}
 	

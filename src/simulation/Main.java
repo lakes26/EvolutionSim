@@ -6,7 +6,7 @@ import graphics.Renderer;
 
 public class Main {
 
-    private static final int frame_rate = 30;
+    private static final int frameRate = 30;
 
     public static void main(String[] args) {
         // start the environment
@@ -22,37 +22,35 @@ public class Main {
         } else {
             env.init();
         }
+        scnr.close();
 
-        int start_ticks = 100000;
-        int print_every = 1000;
+        int startTicks = 100000;
+        int printEvery = 1000;
 
-        for(int i = 0; i < start_ticks; ++i) {
+        for(int i = 0; i < startTicks; ++i) {
             env.tick();
 
-            if (i % print_every == 0) {
-                System.out.printf("%d/%d: %d agents, %d food CC: %d Generation: %d\n ", i, start_ticks, env.getAgents().size(),
+            if (i % printEvery == 0) {
+                System.out.printf("%d/%d: %d agents, %d food CC: %d Generation: %d\n ", i, startTicks, env.getAgents().size(),
                     env.getFood().size(), env.getCarryingCapacity(), env.averageGeneration());
             }
         }
-
 
         // setup the renderer
         Renderer renderer= new Renderer();
         renderer.init(env);
 
         // render forever
-        long start_time;
-        double ticksDifference = 0;
+        long startTime;
         while (true) {
-
             // start the timer
-            start_time= System.currentTimeMillis();
+        	startTime = System.currentTimeMillis();
 
             // render the next frame
             renderer.render();
 
             // wait
-            while (System.currentTimeMillis() - start_time < 1000 / frame_rate) {
+            while (System.currentTimeMillis() - startTime < 1000 / frameRate) {
 
                 try {
                     Thread.sleep(1);
@@ -67,6 +65,6 @@ public class Main {
     }
 
     public static int getFramerate() {
-        return frame_rate;
+        return frameRate;
     }
 }

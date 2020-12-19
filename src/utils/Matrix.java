@@ -111,6 +111,7 @@ public class Matrix implements Serializable {
 	    return result;
 	}
 	
+	// return a mutated copy of a matrix m
 	public static Matrix mutate(Matrix m) {
 		Random rand = new Random();
 		Matrix output = m.copy();

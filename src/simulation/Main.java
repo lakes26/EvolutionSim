@@ -8,14 +8,15 @@ public class Main {
 	
     private static final double frameRate = 30;
 
-    private static int startTicks = 250000;
-    private static int printEvery = 100;
+    private static int startTicks = 0;
+    private static int printEvery = 1000;
     		
     public static void main(String[] args) {
         // start the environment
         Environment env = new Environment();
     	env.init();
 
+    	// TODO saving/loading no longer working
 //        Scanner scnr = new Scanner(System.in);
 //        System.out.print("Load from save.txt?: ");
 //        if (scnr.nextLine().equalsIgnoreCase("y")) {
@@ -48,21 +49,26 @@ public class Main {
                 double propDone = (double) i / startTicks;
                 double secRemaining = (double) (curTime - startTime) / 1000 * (1 / propDone - 1);
                 double minRemaining = Math.floor(secRemaining / 60);
+                double hourRemaining = Math.floor(minRemaining / 60);
                 secRemaining -= 60 * minRemaining;
+                minRemaining -= 60 * hourRemaining;                
                 
-            	System.out.printf("%.1f %% - %.0f m %.0f s remaining - Agents: %d, Food: %d, Average Generation: %d\n ", 
-            			100 * propDone, minRemaining, secRemaining, env.getAgents().size(),
+            	System.out.printf("%.1f %% - %.0f h %.0f m %.0f s remaining - Agents: %d, Food: %d, Average Generation: %d\n ", 
+            			100 * propDone, hourRemaining, minRemaining, secRemaining, env.getAgents().size(),
                     env.getFood().size(), (int) env.averageGeneration());
             }
         }
 
         // print info
         if (startTicks > 0) { 
-        	double secElapsed = (double) System.currentTimeMillis() / startTime;
+        	double secElapsed = (double) (System.currentTimeMillis() - startTime) / 1000;
         	double minElapsed = Math.floor(secElapsed / 60);
+        	double hourElapsed = Math.floor(minElapsed / 60);
         	secElapsed -= 60 * minElapsed;
+        	minElapsed -= 60 * hourElapsed;
         	
-            System.out.printf("Simulated %d ticks in %.0f m %.0f s\n", startTicks, minElapsed, secElapsed);
+            System.out.printf("Simulated %d ticks in %.0f h %.0f m %.0f s\n", 
+            			      startTicks, hourElapsed, minElapsed, secElapsed);
         }
         
         // set the tickrate to match the framerate

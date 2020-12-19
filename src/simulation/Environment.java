@@ -36,10 +36,10 @@ public class Environment {
     private static int startingNumAgents = 60;
     private static int splitThreshold = 3;
     private static int deathThreshold = -2;
-    public static int minAgentSize = 5;
-    public static int maxAgentSize = 50;
-    public static int minAgentSpeed = 10;
-    public static int maxAgentSpeed = 500;
+    public static int minAgentSize = 15;
+    public static int maxAgentSize = 16;
+    public static int minAgentSpeed = 80;
+    public static int maxAgentSpeed = 81;
     private static int maxAge = Integer.MAX_VALUE;
     
     private float secondsElapsed = 0;

@@ -27,6 +27,7 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 		this.borderBuffer = 20;
 	}
 	
+	// draw a node
 	private void drawNode(Graphics g, Color color, int x, int y) {
 		g.setColor(color);
 		g.fillOval(x - nodeSize / 2, y - nodeSize / 2, nodeSize, nodeSize);
@@ -34,11 +35,13 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 		g.drawOval(x - nodeSize / 2, y - nodeSize / 2, nodeSize, nodeSize);
 	}
 	
+	// draw line with a set color
 	private void drawLine(Graphics g, Color color, int x1, int y1, int x2, int y2) {
 		g.setColor(color);
 		g.drawLine(x1, y1, x2, y2);
 	}
 	
+	// calculate color for a connection weight
 	private Color calculateColor(float weight) {
 		if(weight >= 0) {
 			return POSITIVE_WEIGHT;
@@ -47,30 +50,32 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 		}
 	}
 	
+	// calculate the color of a node based on activation 
 	private Color calculateNodeColor(float input) {
-		if(input > 0) {
+		if(input > Agent.networkThreshold) {
 			return NODE_ACTIVE;
 		} else {
 			return NODE_INACTIVE;
 		}
 	}
 	
-	private Color calculateOutputNodeColor(int index, Matrix outputArray) {
-		List<Float> list = outputArray.toArray();
-		
-		int maxAt = 0;
+//	private Color calculateOutputNodeColor(int index, Matrix outputArray) {
+//		List<Float> list = outputArray.toArray();
+//		
+//		int maxAt = 0;
+//
+//		for (int i = 0; i < list.size(); i++) {
+//		    maxAt = list.get(i) > list.get(maxAt) ? i : maxAt;
+//		}
+//		
+//		if(index == maxAt) {
+//			return NODE_ACTIVE;
+//		} else {
+//			return NODE_INACTIVE;
+//		}
+//	}
 
-		for (int i = 0; i < list.size(); i++) {
-		    maxAt = list.get(i) > list.get(maxAt) ? i : maxAt;
-		}
-		
-		if(index == maxAt) {
-			return NODE_ACTIVE;
-		} else {
-			return NODE_INACTIVE;
-		}
-	}
-	
+	// draw the connection lines
 	private void drawLines(Graphics g, NeuralNetwork nn) {
 		int[] structure = nn.getStructure();
 		int widthGap = this.partition(this.dimension.width - (2 * borderBuffer), structure.length - 1);
@@ -97,11 +102,12 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 		}
 	}
 	
-	
+	// draw the nodes
 	private void drawNodes(Graphics g, NeuralNetwork nn) {
 		int[] structure = nn.getStructure();
 		int widthGap = this.partition(this.dimension.width - (2 * borderBuffer), structure.length - 1);
 		
+		// find the max layer size 
 		int maxLayerSize = 0;
 		for(int i = 0; i < structure.length; i++) {
 			if(structure[i] > maxLayerSize) {
@@ -109,27 +115,26 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 			}
 		}
 		
-		int standardPartition = this.partition(this.dimension.height - (2 * borderBuffer), maxLayerSize - 1);
+		// get the node values on a forward pass
+		Matrix inputLayer = this.panel.getSelectedAgent().getInputLayer();
+		List<Matrix> values = nn.propForwardValues(inputLayer);
 		
+		int standardPartition = this.partition(this.dimension.height - (2 * borderBuffer), maxLayerSize - 1);
 		for(int i = 0; i < structure.length; i++) {
+			//int layerHeightGap = this.partition(this.dimension.height - (2 * borderBuffer), structure[i]);
 			
-			int layerHeightGap = this.partition(this.dimension.height - (2 * borderBuffer), structure[i] - 1);
-			
-			for(int j = 0; j < structure[i]; j++) {
-				Color color;
-				if(i == 0) {
-					color = this.calculateNodeColor(this.panel.getSelectedAgent().getInputLayer().getWeight(j,0));
-				} else if(i == structure.length - 1) {
-					color = this.calculateOutputNodeColor(j, this.panel.getSelectedAgent().getOutputLayer());
-				} else {
-					color = NODE_INACTIVE;
-				}
+			for(int j = 0; j < structure[i]; j++) {			
+				// select color based on the activation of the node
+				Color color = this.calculateNodeColor(values.get(i).getWeight(j, 0));
+				
 				this.drawNode(g, color,  borderBuffer + this.x + i * widthGap, 
 								(int)((maxLayerSize - structure[i])/ 2.0 * standardPartition) + borderBuffer + this.y + j * standardPartition);
+			
 			}
 		}
 	}
 	
+	// draw the entire panel
 	private void drawAgentNeuralNet(Graphics g, Agent agent) {
 		if(agent != null && this.panel.getTrackingID() != -1) {
 			NeuralNetwork nn = agent.getNeuralNetwork();
@@ -147,5 +152,4 @@ public class NeuralNetworkVisualizer extends OverlayPanel{
 	public void render(Graphics g) {
 		drawAgentNeuralNet(g, this.panel.getSelectedAgent());
 	}
-
 }

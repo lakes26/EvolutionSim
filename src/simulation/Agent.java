@@ -23,7 +23,7 @@ public class Agent extends CollidableObject implements Serializable{
     private Matrix outputLayer;
     private List<Agent> offspring;
     
-    private static float networkThreshold = (float) .5;
+    public static float networkThreshold = (float) .5;
     
     private int numOffspring = 0;
     protected float age = 0;
@@ -38,11 +38,11 @@ public class Agent extends CollidableObject implements Serializable{
     
     private static float perceptiveRangeFood = 200;
     private static int verticalVisionSlicesFood = 2;
-    private static int horizontalVisionSlicesFood = 3;
+    private static int horizontalVisionSlicesFood = 5;
     private static float fovFood = (float) (Math.PI / 2);
 
-    private static float perceptiveRangeWall = 200;
-    private static int verticalVisionSlicesWall = 1;
+    private static float perceptiveRangeWall = 150;
+    private static int verticalVisionSlicesWall = 2;
     private static int horizontalVisionSlicesWall = 7;
     private static float fovWall = (float) (Math.PI);
     
@@ -50,7 +50,7 @@ public class Agent extends CollidableObject implements Serializable{
     private static int inputLength = verticalVisionSlicesFood * horizontalVisionSlicesFood
     								 + verticalVisionSlicesWall * horizontalVisionSlicesWall;
 
-    private static int turnSpeed = 1;
+    private static float turnSpeed = (float) 1.2;
     
     // create a new agent
     public Agent(float x, float y, float radius, float direction, float speed, TileMap tileMap) {
@@ -60,7 +60,7 @@ public class Agent extends CollidableObject implements Serializable{
         this.direction = direction;
         this.speed = speed;
 
-        this.neuralNet = new NeuralNetwork(inputLength, outputLength);
+        this.neuralNet = new NeuralNetwork(inputLength, 6, outputLength);
         this.DNA = new byte[3];
         rand.nextBytes(DNA);
         this.offspring = new ArrayList<>();
@@ -137,7 +137,7 @@ public class Agent extends CollidableObject implements Serializable{
     //	  this is called once per tick for each agent
     public void update(Environment e) {
         pollEnvironment(e);
-        outputLayer= neuralNet.propForward(inputLayer);
+        outputLayer = neuralNet.propForward(inputLayer);
         List<Float> outputLayer = getOutputLayer().toArray();
 
 //        int maxIndex = 0;

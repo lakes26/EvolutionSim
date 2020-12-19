@@ -1,14 +1,15 @@
 package utils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import simulation.Environment;
 
-public class NeuralNetwork implements Serializable{
-
+public class NeuralNetwork implements Serializable {
     private static final long serialVersionUID = 1L;
+
     int[] structure;
     Matrix[] weights;
 	Matrix[] biases;
@@ -30,6 +31,7 @@ public class NeuralNetwork implements Serializable{
 		this.structure = new int[0];
 	}
 	
+	// perform a forward pass of the network
 	public Matrix propForward(Matrix input) {
 		Matrix vector = input;
 		for(int i = 0; i < weights.length; i++) {
@@ -40,11 +42,27 @@ public class NeuralNetwork implements Serializable{
 		return vector;
 	}
 	
-	public NeuralNetwork mutate() {
-		// TODO better mutation
+	// all node values along forward pass
+	public List<Matrix> propForwardValues(Matrix input) {
+		List<Matrix> values = new ArrayList<Matrix>();
+		values.add(input);
 		
-		float mutationRate = Environment.traitMutationRate;
+		Matrix temp = input;
+		for (int i = 0; i < weights.length; ++i) {
+			temp = temp.copy();
+			
+			temp = Matrix.multiply(weights[i], temp); 
+			temp = Matrix.add(temp, biases[i]);
+			temp.sigmoid();
+			
+			values.add(temp);
+		}
 		
+		return values;
+	}
+	
+	// mutate the network
+	public NeuralNetwork mutate() {				
 		NeuralNetwork nn = new NeuralNetwork();
 		nn.structure = this.structure.clone();
 		nn.weights = new Matrix[this.weights.length];
@@ -59,6 +77,7 @@ public class NeuralNetwork implements Serializable{
 		return nn;
 	}
 	
+	// get a specific weight
 	public float getWeight(int weightMatrix, int inputPosition, int outputPosition) {
 		return this.weights[weightMatrix].getWeight(inputPosition, outputPosition);
 	}

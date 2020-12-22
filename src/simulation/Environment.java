@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class Environment {
 	public static double foodPerSecond = 20;
-    public static double tickRate = 10;
+    public static double tickRate = 15;
     
     public static float traitMutationRate = (float) 0.1;  // rate for changing traits such as size
     public static float networkMutationProbability = (float) 0.8;  // probability network will be changed
@@ -38,8 +38,8 @@ public class Environment {
     private static int deathThreshold = -2;
     public static int minAgentSize = 15;
     public static int maxAgentSize = 16;
-    public static int minAgentSpeed = 80;
-    public static int maxAgentSpeed = 81;
+    public static int minAgentSpeed = 45;
+    public static int maxAgentSpeed = 46;
     private static int maxAge = Integer.MAX_VALUE;
     
     private float secondsElapsed = 0;

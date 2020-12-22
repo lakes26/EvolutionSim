@@ -30,37 +30,20 @@ public class Agent extends CollidableObject implements Serializable{
     private int generation = 0;
 
     protected float energy = 2;
-    private static float burnRate = (float) 0.002;
-    private static float burnPerSecond = (float) 0;
-    
-    private static float baseMoveSpeed = (float) 1;
-    private static float baseTurnSpeed = (float) 1;
-    
+    private static float burnRate = (float) 0.005;
+    private static float burnPerSecond = (float) 0.00001;
+        
     // constants for raytracing
-    private static float[] rays = { -30, -15, 0, 15, 30 };
+    private static float[] rays = { -90, -60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60, 90 };
     private static float rayLength = 150;
     private static int nRays = rays.length;
     
-    private static int rayStep = 5;  // TODO there should be some optimal value for this based on the tile size
+    private static int rayStep = 5;
     
     private static int inputLength = 3 * nRays;
     private static int outputLength = 2;
-    
-    // constants for zone based vision
-//    private static float perceptiveRangeFood = 200;
-//    private static int verticalVisionSlicesFood = 2;
-//    private static int horizontalVisionSlicesFood = 5;
-//    private static float fovFood = (float) (Math.PI / 2);
-//
-//    private static float perceptiveRangeWall = 150;
-//    private static int verticalVisionSlicesWall = 2;
-//    private static int horizontalVisionSlicesWall = 7;
-//    private static float fovWall = (float) (Math.PI);
-//    
-//    private static int inputLength = verticalVisionSlicesFood * horizontalVisionSlicesFood
-//    								 + verticalVisionSlicesWall * horizontalVisionSlicesWall;
-    
-    private static float turnSpeed = (float) 0.3;
+
+    private static float turnSpeed = (float) 0.4;
     
     // create a new agent
     public Agent(float x, float y, float radius, float direction, float speed, TileMap tileMap) {
@@ -150,42 +133,17 @@ public class Agent extends CollidableObject implements Serializable{
         outputLayer = neuralNet.propForward(inputLayer);
         List<Float> outputLayer = getOutputLayer().toArray();
 
-//        int maxIndex = 0;
-//        float max = 0;
-//        for (int i = 0; i < outputLayer.size(); i++ ) {
-//            if (outputLayer.get(i) > max) {
-//                max = outputLayer.get(i);
-//                maxIndex = i;
-//            }
-//        }
-//
-//        if (maxIndex == 0) {
-//            move(Agent.baseMoveSpeed, e.getTileMap());
-//            turn(Agent.baseTurnSpeed);  // turn left
-//            direction = normalizeDirection(direction);
-//        } else if (maxIndex == 1) {
-//            move(Agent.baseMoveSpeed, e.getTileMap());
-//        } else {
-//            move(Agent.baseMoveSpeed, e.getTileMap());
-//            turn(-Agent.baseTurnSpeed);  // turn right
-//            direction = normalizeDirection(direction);
-//        }
-
         // turn the agent
         boolean networkLeft = outputLayer.get(0) > Agent.networkThreshold;
         boolean networkRight = outputLayer.get(1) > Agent.networkThreshold;
         if (networkLeft && !networkRight) {
-        	turn(Agent.baseTurnSpeed);
+        	turn(1);
         } else if (networkRight && !networkLeft) {
-        	turn(-Agent.baseTurnSpeed);
+        	turn(-1);
         }
         
         // move the agent
-        move(Agent.baseMoveSpeed, e.getTileMap());
-//        boolean networkMove = outputLayer.get(2) > Agent.networkThreshold;
-//        if (networkMove) {
-//            move(Agent.baseMoveSpeed, e.getTileMap());        	
-//        }
+        move(speed, e.getTileMap());
 
         // check if we are on food
         Food closestFood = findClosestFood(e.getFood());
@@ -199,13 +157,13 @@ public class Agent extends CollidableObject implements Serializable{
         age += (float) 1 / Environment.tickRate;
     
         // burn a base amount of food
-        this.energy -= burnPerSecond / Environment.tickRate;
+        this.energy -= burnPerSecond * radius / Environment.tickRate;
     }
 
-    protected void move(float dist, TileMap tileMap) {
+    protected void move(float speed, TileMap tileMap) {
     	// get new coords
-    	float xNew = x + (float) (Math.sin(direction) * speed * dist / Environment.tickRate);
-        float yNew = y + (float) (Math.cos(direction) * speed * dist / Environment.tickRate);
+    	float xNew = x + (float) (Math.sin(direction) * speed / Environment.tickRate);
+        float yNew = y + (float) (Math.cos(direction) * speed / Environment.tickRate);
 
         xNew = Math.min(Math.max(xNew, 0), Environment.getWidth() - 1);
         yNew = Math.min(Math.max(yNew, 0), Environment.getHeight() - 1);
@@ -243,7 +201,7 @@ public class Agent extends CollidableObject implements Serializable{
         y = yNew;
         
         // update energy
-        addEnergy((float) getBurnRate() * dist);
+        addEnergy((float) getBurnRate());
     }
 
     public void keepInBounds() {    	
@@ -256,21 +214,24 @@ public class Agent extends CollidableObject implements Serializable{
         direction += Math.PI * amount * Agent.turnSpeed / Environment.tickRate;
     }
 
-    protected Food findClosestFood(List<Food> food) {
-    	// TODO this is a bit inefficent
-    	
+    protected Food findClosestFood(List<Food> food) {    	
         Food closestFood;
+        float closestFoodDist;
         if (food == null || food.isEmpty()) {
             return null;
         } else {
-            closestFood= food.get(0);
+            closestFood = food.get(0);
+            closestFoodDist = getDistance(closestFood);
         }
 
         for (Food element : food) {
-            if (getDistance(element) < getDistance(closestFood)) {
+        	float dist = getDistance(element);
+            if (dist < closestFoodDist) {
                 closestFood = element;
+                closestFoodDist = dist;
             }
         }
+        
         return closestFood;
     }
 
@@ -309,6 +270,12 @@ public class Agent extends CollidableObject implements Serializable{
     		minWallDist[i] = rayLength;
     	}
     	
+    	// pre-calculate ray directions
+    	float[] rayDirections = new float[rays.length];
+    	for (int i = 0; i < rays.length; ++i) {
+    		rayDirections[i] = normalizeDirection(direction + (float) (rays[i] * Math.PI / 180));
+    	}
+    	
     	// get food distance
     	ArrayList<Food> foods = e.getFood();
     	for (Food food : foods) {
@@ -323,8 +290,7 @@ public class Agent extends CollidableObject implements Serializable{
     	        
     	        // loop thru each ray
     	        for (int i = 0; i < rays.length; ++i) {
-    	        	float rayDirection = normalizeDirection(direction + (float) (rays[i] * Math.PI / 180)); // TODO calculate this ahead of time
-    	        	float dirDiff = Math.abs(foodDirection - rayDirection);  // TODO I think there's a small edge case when one direction is above zero and the other is below
+    	        	float dirDiff = Math.abs(foodDirection - rayDirections[i]);
     	        	
     	        	if (dirDiff < maxDirectionDeviation && dist < minFoodDist[i]) {
     	        		minFoodDist[i] = dist;
@@ -338,11 +304,10 @@ public class Agent extends CollidableObject implements Serializable{
     	// check each ray individually
     	for (int i = 0; i < rays.length; ++i) {
     		// start at the agent
-    		float rayDirection = normalizeDirection(direction + (float) (rays[i] * Math.PI / 180));
     		float rayX = x;
     		float rayY = y;
-    		float stepX = (float) (Math.sin(rayDirection) * rayStep);
-    		float stepY = (float) (Math.cos(rayDirection) * rayStep);
+    		float stepX = (float) (Math.sin(rayDirections[i]) * rayStep);
+    		float stepY = (float) (Math.cos(rayDirections[i]) * rayStep);
     		
     		// step along the ray
     		for (int rayDist = 0; rayDist < rayLength; rayDist += rayStep) {
@@ -388,58 +353,6 @@ public class Agent extends CollidableObject implements Serializable{
     	// update the input layer class variable
       	inputLayer = Matrix.fromArray(inputArray);    	
     }
-    
-    // setup the input layer for the neural network--old method using zone vision
-//    private void pollEnvironment(Environment e) {        
-//        int totalSlicesFood = verticalVisionSlicesFood * horizontalVisionSlicesFood;       
-//        float[] inputArray = new float[inputLength];
-//        float fovLeftFood = -fovFood / 2;
-//        float fovStepFood = fovFood / horizontalVisionSlicesFood;
-//        float rangeStepFood = perceptiveRangeFood / verticalVisionSlicesFood;
-//        
-//        // process food inputs
-//        ArrayList<Food> food = e.getFood();
-//        for (Food f : food) {
-//            float dir = normalizeDirection(directionOf(f));
-//            float angle = normalizeDirection(direction - dir);
-//            float dist = getDistance(f);
-//            int vSlice = (int) (dist / rangeStepFood);
-//            int hSlice = (int) ((angle + fovLeftFood) / fovStepFood);
-//            
-//            if (vSlice >= 0 && vSlice < verticalVisionSlicesFood) {
-//                if (hSlice >= 0 && hSlice < horizontalVisionSlicesFood) {
-//                    int index = vSlice + hSlice * verticalVisionSlicesFood;
-//                    inputArray[index] += 1;
-//                }
-//            }
-//        }
-//        
-//        // process wall inputs 
-//        //    just checks the middle of each slice
-//        float fovLeftWall = -fovWall / 2;
-//        float fovStepWall = fovWall / horizontalVisionSlicesWall;
-//        float rangeStepWall = perceptiveRangeWall / verticalVisionSlicesWall;
-//        
-//        // loop thru vision slices
-//        TileMap tileMap = e.getTileMap();
-//        for (float i = 0; i < horizontalVisionSlicesWall; ++i) {
-//        	for (float j = 0; j < verticalVisionSlicesWall; ++j) {
-//        		// get the x and y of the center of the slice
-//        		float centerAngle = normalizeDirection(direction + fovLeftWall + ((float) .5 + i) * fovStepWall);  // get the angle of the center of the slice
-//        		float dist = ((float) .5 + j) * rangeStepWall;  // get the distance to the center of the slice
-//
-//        		float xCenter = this.x + (float) (Math.sin(centerAngle) * dist);
-//                float yCenter = this.y + (float) (Math.cos(centerAngle) * dist);
-//        		
-//        		if (tileMap.inWall(xCenter, yCenter)) {
-//        			inputArray[(int) (totalSlicesFood + i + verticalVisionSlicesWall * j)] = 1;
-//        		}
-//        	}
-//        }
-//        
-//        // update input layer
-//        inputLayer = Matrix.fromArray(inputArray);
-//    }
 
     private void pointTowards(CollidableObject o) {
         direction = (float) Math.atan2(o.x - x, o.y - y);
@@ -527,7 +440,7 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     public float getBurnRate() {
-        return (float) (-getSpeed() * Agent.burnRate * Math.log(getRadius()) / Environment.tickRate);
+        return (float) (-speed * Agent.burnRate / Environment.tickRate);
     }
 
     public int getNumOffspring() {

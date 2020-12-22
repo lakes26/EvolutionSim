@@ -42,8 +42,6 @@ public class Panel extends JPanel{
 	private EnvironmentRenderer environmentRenderer;
 	private OverlayManager overlayManager;
 
-	//private NeuralNetworkVisualizer neuralNetworkVisualizer;
-
 	public Panel(Environment environment, int width, int height) {
 		this.environment = environment;
 		
@@ -58,9 +56,6 @@ public class Panel extends JPanel{
 		this.mode = getModeFree();
 		this.setTrack_id(-1);
 		this.statisticPanel = new StatisticPanel(this, 5, 15, 0);
-		
-		//neuralNetworkVisualizer = new NeuralNetworkVisualizer(this, new Dimension(300, 300));
-		//neuralNetworkVisualizer.setLocation(25, 150);
 		
 		this.environmentRenderer = new EnvironmentRenderer(this);
 		this.overlayManager = new OverlayManager(this);
@@ -77,11 +72,12 @@ public class Panel extends JPanel{
 		
 		// set the and y offsets based on tracking
 		setOffsets();
-		//render the environment;
+		
+		// render the environment;
 		environmentRenderer.renderEnvironment(g);
 		overlayManager.renderOverlay(g);
 		
-		//draw save indicator if saving
+		// draw save indicator if saving
 		drawSaveIndicator(g);
 
 		// draw tracking indicator if tracking an active agent
@@ -110,7 +106,7 @@ public class Panel extends JPanel{
 				// draw the ray
 				drawRay(g, rayDir, rayLength, food, wall);
 			}
-			
+
 			// draw the tracking indicator
 			drawTrackingIndicator(g);
 		}
@@ -149,12 +145,6 @@ public class Panel extends JPanel{
 				    (int) (height / 2 - radius * scale) - 1, 
 				    (int) (2 * radius * scale) + 2, 
 				    (int) (2 * radius * scale) + 2);
-		
-		// draw a cross on the agent
-//		g.fillRect((width - indicatorWidth) / 2, (height - indicatorWidth) / 2 - size, 
-//				   indicatorWidth, 2 * size);
-//		g.fillRect((width - indicatorWidth) / 2 - size, (height - indicatorWidth) / 2,
-//				   2 * size, indicatorWidth);
 	}
 	
 	// go from graphical coords to environment coords

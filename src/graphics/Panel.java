@@ -260,22 +260,21 @@ public class Panel extends JPanel{
 		}
 	}
 
-	public void mouseClicked(int x, int y) {
+	public void mouseClicked(int x, int y) {		
 		this.overlayManager.checkClickComponants(x, y);
 		Point p = this.getEnvironmentCoordinates(x, y);
 		
+		// check for tracking a new agent
 		if (this.mode == Panel.MODE_TRACK) {
 			// loop thru the agents
 			ArrayList<Agent> agents = environment.getAgents();
 
 			for (int i = 0; i < agents.size(); ++i) {
 				Agent agent = agents.get(i);
-				
-				double dist = Math.sqrt(Math.pow(p.x - agent.getX(), 2) - 
-										Math.pow(p.y - agent.getY(), 2));
+				float dist = agent.getDistance(p);
 				
 				// if clicking on this agent
-				if (dist < agent.getRadius() * scale) {
+				if (dist < agent.getRadius()) {
 					this.setTrack_id(agent.getID());
 					this.setSelectedAgent(agent);
 					return;

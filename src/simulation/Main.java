@@ -8,7 +8,7 @@ public class Main {
 	
     private static final double frameRate = 30;
 
-    private static int startTicks = 0;
+    private static int startTicks = 500000;
     private static int printEvery = 1000;
     		
     public static void main(String[] args) {

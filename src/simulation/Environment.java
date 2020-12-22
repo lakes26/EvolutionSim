@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class Environment {
 	public static double foodPerSecond = 20;
-    public static double tickRate = 8;
+    public static double tickRate = 10;
     
     public static float traitMutationRate = (float) 0.1;  // rate for changing traits such as size
     public static float networkMutationProbability = (float) 0.8;  // probability network will be changed
@@ -24,7 +24,7 @@ public class Environment {
     public static float networkNewValueProbability = (float) 0.05;  // probability of weight getting a new value
     public static float networkValueRandRange = (float) 3;  // range for new weights and biases    
     
-	private static int foodRadius = 10;
+	public static int foodRadius = 10;
     private static float foodEnergy = (float) 1;
     private static int startingNumFood = 200;
 

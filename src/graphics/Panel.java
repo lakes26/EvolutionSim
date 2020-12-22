@@ -1,14 +1,19 @@
 package graphics;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JPanel;
 import simulation.Agent;
+import simulation.CollidableObject;
 import simulation.Environment;
 
 public class Panel extends JPanel{
@@ -16,6 +21,8 @@ public class Panel extends JPanel{
 
 	private static final int MODE_FREE = 1;
 	private static final int MODE_TRACK = 2;	
+	
+	private static int trackingIndicatorThickness = 3;
 	
 	private static final double scroll_speed = 20;
 	private static final double zoom_speed = 0.03;
@@ -78,21 +85,76 @@ public class Panel extends JPanel{
 		drawSaveIndicator(g);
 
 		// draw tracking indicator if tracking an active agent
-		drawTrackingIndicator(g);
+		drawTrackingInfo(g);
 	}
 	
-	private void drawTrackingIndicator(Graphics g) {
-		int size = 15;  // TODO make class variables
-		int indicatorWidth = 2;
-		
+	// draw extra info for an agent that is being tracked
+	private void drawTrackingInfo(Graphics g) {		
+		// check if tracking an active agent
 		if (this.mode == Panel.MODE_TRACK && this.getTrack_id() != -1) {
-			g.setColor(Color.RED);
+			// get the tracked agent
+			Agent agent = getSelectedAgent();
 			
-			g.fillRect((width - indicatorWidth) / 2, (height - indicatorWidth) / 2 - size, 
-					   indicatorWidth, 2 * size);
-			g.fillRect((width - indicatorWidth) / 2 - size, (height - indicatorWidth) / 2,
-					   2 * size, indicatorWidth);
+			// draw the raytracing lines
+			float[] rays = agent.getRays();
+			int nRays = agent.getNRays();
+			float direction = agent.getDirection();
+			float fullRayLength = agent.getRayLength();
+			List<Float> inputLayer = agent.getInputLayer().toArray(); 			
+			for (int i = 0; i < nRays; ++i) {
+				float rayDir = CollidableObject.normalizeDirection(direction + (float) (rays[i] * Math.PI / 180));
+				float rayLength = inputLayer.get(3 * i) * fullRayLength;
+				float food = inputLayer.get(3 * i + 1);
+				float wall = inputLayer.get(3 * i + 2);
+				
+				// draw the ray
+				drawRay(g, rayDir, rayLength, food, wall);
+			}
+			
+			// draw the tracking indicator
+			drawTrackingIndicator(g);
 		}
+	}
+	
+	// draw a raytracing ray from the agent at the center of the screen
+	private void drawRay(Graphics g, float rayDir, float rayLength, float food, float wall) {
+		// get the graphical coords of the end of the ray
+		Agent a = getSelectedAgent();
+		float x = a.getX() + (float) (Math.sin(rayDir) * rayLength);
+		float y = a.getY() + (float) (Math.cos(rayDir) * rayLength);
+		Point p = getGraphicalCoords(x, y);
+		
+		// set color
+		if (food != 0 || wall != 0) {
+			g.setColor(Color.WHITE);
+		} else {
+			g.setColor(Color.BLACK);
+		}
+		
+		g.drawLine(width / 2, height / 2, p.x, p.y);
+	}
+	
+	// draw a indicator on the tracked agent
+	private void drawTrackingIndicator(Graphics g) {		
+		g.setColor(Color.RED);	
+		Agent a = getSelectedAgent();
+		float radius = a.getRadius();
+		
+		// set the stroke width
+	    Graphics2D g2 = (Graphics2D) g;
+	    g2.setStroke(new BasicStroke((int) (trackingIndicatorThickness * scale)));
+	    
+	    // draw circle around the agent
+		g2.drawOval((int) (width / 2 - radius * scale) - 1, 
+				    (int) (height / 2 - radius * scale) - 1, 
+				    (int) (2 * radius * scale) + 2, 
+				    (int) (2 * radius * scale) + 2);
+		
+		// draw a cross on the agent
+//		g.fillRect((width - indicatorWidth) / 2, (height - indicatorWidth) / 2 - size, 
+//				   indicatorWidth, 2 * size);
+//		g.fillRect((width - indicatorWidth) / 2 - size, (height - indicatorWidth) / 2,
+//				   2 * size, indicatorWidth);
 	}
 	
 	// go from graphical coords to environment coords

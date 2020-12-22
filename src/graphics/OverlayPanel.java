@@ -78,7 +78,7 @@ public abstract class OverlayPanel {
 		return OUTLINE;
 	}
 
-	public static void setOUTLINE(Color oUTLINE) {
-		OUTLINE = oUTLINE;
+	public static void setOUTLINE(Color OUTLINE) {
+		OverlayPanel.OUTLINE = OUTLINE;
 	}
 }

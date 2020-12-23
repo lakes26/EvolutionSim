@@ -90,21 +90,29 @@ public class Panel extends JPanel{
 		if (this.mode == Panel.MODE_TRACK && this.getTrack_id() != -1) {
 			// get the tracked agent
 			Agent agent = getSelectedAgent();
-			
+						
 			// draw the raytracing lines
 			float[] rays = agent.getRays();
 			int nRays = agent.getNRays();
+			int inputTypes = agent.getInputTypes();
 			float direction = agent.getDirection();
 			float fullRayLength = agent.getRayLength();
 			List<Float> inputLayer = agent.getInputLayer().toArray(); 			
 			for (int i = 0; i < nRays; ++i) {
 				float rayDir = CollidableObject.normalizeDirection(direction + (float) (rays[i] * Math.PI / 180));
-				float rayLength = inputLayer.get(3 * i) * fullRayLength;
-				float food = inputLayer.get(3 * i + 1);
-				float wall = inputLayer.get(3 * i + 2);
+				float rayLength = inputLayer.get((inputTypes + 1) * i) * fullRayLength;
+				
+				// check for collision
+				boolean collision = false;
+				for (int j = 0; j < inputTypes; ++j) {
+					if (inputLayer.get((inputTypes + 1) * i + j + 1) == 1) {
+						collision = true;
+						break;
+					}
+				}
 				
 				// draw the ray
-				drawRay(g, rayDir, rayLength, food, wall);
+				drawRay(g, rayDir, rayLength, collision);
 			}
 
 			// draw the tracking indicator
@@ -113,7 +121,7 @@ public class Panel extends JPanel{
 	}
 	
 	// draw a raytracing ray from the agent at the center of the screen
-	private void drawRay(Graphics g, float rayDir, float rayLength, float food, float wall) {
+	private void drawRay(Graphics g, float rayDir, float rayLength, boolean collision) {
 		// get the graphical coords of the end of the ray
 		Agent a = getSelectedAgent();
 		float x = a.getX() + (float) (Math.sin(rayDir) * rayLength);
@@ -121,7 +129,7 @@ public class Panel extends JPanel{
 		Point p = getGraphicalCoords(x, y);
 		
 		// set color
-		if (food != 0 || wall != 0) {
+		if (collision) {
 			g.setColor(Color.WHITE);
 		} else {
 			g.setColor(Color.BLACK);

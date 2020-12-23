@@ -2,6 +2,7 @@ package simulation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -34,13 +35,14 @@ public class Agent extends CollidableObject implements Serializable{
     private static float burnPerSecond = (float) 0.00001;
         
     // constants for raytracing
-    private static float[] rays = { -90, -60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60, 90 };
+    private static float[] rays = { -90, -60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60, 90 };  // degree values for each ray
     private static float rayLength = 150;
     private static int nRays = rays.length;
     
+    private static int inputTypes = 3;  // food, walls, other agents 
     private static int rayStep = 5;
     
-    private static int inputLength = 3 * nRays;
+    private static int inputLength = (inputTypes + 1) * nRays;
     private static int outputLength = 2;
 
     private static float turnSpeed = (float) 0.4;
@@ -262,12 +264,14 @@ public class Agent extends CollidableObject implements Serializable{
     private void pollEnvironment(Environment e) {    	
     	float[] inputArray = new float[inputLength];
 
-    	// setup min food dist and min wall dist arrays
+    	// setup min dist arrays
     	float[] minFoodDist = new float[rays.length];
     	float[] minWallDist = new float[rays.length];
+    	float[] minAgentDist = new float[rays.length];
     	for (int i = 0; i < rays.length; ++i) {
     		minFoodDist[i] = rayLength;
     		minWallDist[i] = rayLength;
+    		minAgentDist[i] = rayLength;
     	}
     	
     	// pre-calculate ray directions
@@ -278,21 +282,21 @@ public class Agent extends CollidableObject implements Serializable{
     	
     	// get food distance
     	ArrayList<Food> foods = e.getFood();
-    	for (Food food : foods) {
+    	for (Food element : foods) {
     		// get distance to agent
-    		float dist = getDistance(food);
+    		float dist = getDistance(element);
     		
     		// if within range
     		if (dist < rayLength) {
     			// get angle and arc length
-    	        float foodDirection = (float) Math.atan2(food.x - x, food.y - y);
+    	        float foodDirection = (float) Math.atan2(element.x - x, element.y - y);
     	        float maxDirectionDeviation = Environment.foodRadius / dist;  // this is an approximation based on the arc length
     	        
     	        // loop thru each ray
     	        for (int i = 0; i < rays.length; ++i) {
     	        	float dirDiff = Math.abs(foodDirection - rayDirections[i]);
     	        	
-    	        	if (dirDiff < maxDirectionDeviation && dist < minFoodDist[i]) {
+    	        	if (dirDiff < maxDirectionDeviation && dist < minFoodDist[i]) {  // TODO there may be a small edge case here
     	        		minFoodDist[i] = dist;
     	        	}
     	        }
@@ -315,38 +319,67 @@ public class Agent extends CollidableObject implements Serializable{
     				minWallDist[i] = rayDist;
     				break;
     			}
-    			
-    			// TODO handle skips over two 
-    			
+    			    			
     			rayX += stepX;
     			rayY += stepY;
     		}
     	}
-    	    	
+    	
+    	// get agent distance
+    	ArrayList<Agent> agents = e.getAgents();
+    	for (Agent element : agents) {
+    		// ignore this agent
+    		if (element.getId() == id) {
+    			continue;
+    		}
+    		
+    		// get distance to agent
+    		float dist = getDistance(element);
+    		
+    		// if within range
+    		if (dist < rayLength) {
+    			// get angle and arc length
+    	        float foodDirection = (float) Math.atan2(element.x - x, element.y - y);
+    	        float maxDirectionDeviation = Environment.foodRadius / dist;  // this is an approximation based on the arc length
+    	        
+    	        // loop thru each ray
+    	        for (int i = 0; i < rays.length; ++i) {
+    	        	float dirDiff = Math.abs(foodDirection - rayDirections[i]);
+    	        	
+    	        	if (dirDiff < maxDirectionDeviation && dist < minAgentDist[i]) {
+    	        		minAgentDist[i] = dist;
+    	        	}
+    	        }
+       		}
+    	}
+    	
     	// update the input array
     	for (int i = 0; i < rays.length; ++i) {
-    		// see food and wall
-    		if (minFoodDist[i] != rayLength && minWallDist[i] != rayLength) {
-    			// food closer
-    			if (minFoodDist[i] < minWallDist[i]) {
-    				inputArray[3 * i] = minFoodDist[i] / rayLength;
-    				inputArray[3 * i + 1] = 1;
-				// wall closer
-    			} else {
-    				inputArray[3 * i] = minWallDist[i] / rayLength;
-    				inputArray[3 * i + 2] = 1;
-    			}
-			// see food
-    		} else if (minFoodDist[i] != rayLength && minWallDist[i] == rayLength) {
-    			inputArray[3 * i] = minFoodDist[i] / rayLength;
-				inputArray[3 * i + 1] = 1;
-			// see wall
-    		} else if (minFoodDist[i] == rayLength && minWallDist[i] != rayLength) {
-    			inputArray[3 * i] = minWallDist[i] / rayLength;
-				inputArray[3 * i + 2] = 1;
+    		// TODO this is a bit sloppy, maybe use an enum?
+    		    		
     		// see nothing
+    		if (minFoodDist[i] == rayLength && minWallDist[i] == rayLength && minAgentDist[i] == rayLength) {
+    			inputArray[(inputTypes + 1) * i] = 1;
+			// see something but need to decide what
     		} else {
-    			inputArray[3 * i] = 1;
+    			// default to food closest
+    			int closestOffset = 1;
+    			float closestDist = minFoodDist[i];
+    			
+    			// check for wall closest
+    			if (minWallDist[i] < closestDist) {
+    				closestOffset = 2;
+    				closestDist = minWallDist[i];
+    			}
+    			// check for agent closest
+    			if (minAgentDist[i] < closestDist) {
+    				closestOffset = 3;
+    				closestDist = minAgentDist[i];
+    			}
+    			
+    			// set values in input array
+    			inputArray[(inputTypes + 1) * i] = closestDist / rayLength;
+    			inputArray[(inputTypes + 1) * i + closestOffset] = 1;
     		}
     	}
     	
@@ -473,5 +506,9 @@ public class Agent extends CollidableObject implements Serializable{
 
     public List<Agent> getOffspring() {
         return offspring;
+    }
+    
+    public int getInputTypes() {
+    	return inputTypes;
     }
 }

@@ -31,7 +31,7 @@ public class PopulationStatisticPanel extends OverlayPanel{
         List<String> returnList = new ArrayList<>();
 
         returnList.add(String.format("Average Speed: %.2f", panel.getEnvironment().getAverageSpeed()));
-        returnList.add(String.format("Average Velocity: %.2f", panel.getEnvironment().avgVelocity));
+        returnList.add(String.format("Average Velocity: %.2f", panel.getEnvironment().getAverageVelocity()));
         returnList.add(String.format("Average Size: %.2f", panel.getEnvironment().getAverageSize()));
         returnList.add(String.format("Average Generation: %.2f", panel.getEnvironment().averageGeneration()));
         returnList.add(String.format("Seconds Simulated: %.2f", panel.getEnvironment().getSecondsElapsed()));

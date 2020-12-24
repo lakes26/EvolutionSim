@@ -6,7 +6,7 @@ public class Main {
 
     private static final double frameRate = 30;
 
-    private static int startTicks = 10000;
+    private static int startTicks = 100000;
     private static int printEvery = 1000;
 
     public static void main(String[] args) {

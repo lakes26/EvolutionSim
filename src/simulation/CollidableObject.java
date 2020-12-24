@@ -3,6 +3,7 @@ package simulation;
 
 import java.awt.Point;
 import java.io.Serializable;
+import java.util.Random;
 
 public class CollidableObject implements Serializable{
 
@@ -10,11 +11,13 @@ public class CollidableObject implements Serializable{
     protected float x;
     protected float y;
     protected float radius;
+    private long id;
 
     public CollidableObject(float x, float y, float radius) {
         this.x = x;
         this.y = y;
         this.radius = radius;
+        generateID();
     }
 
     public float getDistance(CollidableObject o) {
@@ -70,6 +73,12 @@ public class CollidableObject implements Serializable{
         return direction;
     }
 
+    private void generateID() {
+        Random rand = new Random();
+        id = Math.abs(rand.nextLong());
+    }
 
-
+    public long getID() {
+        return id;
+    }
 }

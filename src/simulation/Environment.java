@@ -30,8 +30,8 @@ public class Environment {
 
     private static int tileSize = 50;
 
-    private static int width = 1200;
-    private static int height = 1200;
+    public static int width = 1200;
+    public static int height = 1200;
 
     private static int startingNumAgents = 60;
     private static int splitThreshold = 3;
@@ -50,6 +50,8 @@ public class Environment {
     private ArrayList<Agent> agentList;
     private Random rand;
     private TileMap tileMap;
+    private VisibilityBox visBox;
+
 
     public Environment() {
         assert width % tileSize == 0 && height % tileSize == 0;
@@ -67,18 +69,12 @@ public class Environment {
             List<Agent> toAdd = new ArrayList<>();
 
             int limit = agentList.size();
-            float totalDists = 0;
+            visBox = new VisibilityBox(this);
+
             for (int i = 0; i < limit; i++ ) {
                 Agent agent = agentList.get(i);
 
-                float oldx = agent.getX();
-                float oldy = agent.getY();
                 agent.update(this);
-                float newx = agent.getX();
-                float newy = agent.getY();
-
-                float distMoved = (float) Math.pow(Math.pow(newx-oldx, 2)+Math.pow(newy-oldy, 2), .5);
-                totalDists += distMoved;
 
                 if (agent.getEnergy() > splitThreshold) {
                     Agent newAgent = new Agent(agent, tileMap, width, height);
@@ -91,7 +87,7 @@ public class Environment {
                     toRemove.add(i);
                 }
             }
-            avgVelocity = (float) (totalDists/agentList.size()*tickRate);
+
             // remove dead agents
             while (!toRemove.isEmpty()) {
                 int index = toRemove.poll();
@@ -104,7 +100,6 @@ public class Environment {
 
             // add to seconds elapsed
             secondsElapsed += 1 / tickRate;
-
         }
     }
 
@@ -114,6 +109,7 @@ public class Environment {
         }
         spawnRandomNewFood(startingNumFood);
     }
+
 
     public Agent createRandomAgent() {
         float radius = 15;//rand.nextInt(maxAgentSize - minAgentSize) + minAgentSize;
@@ -237,6 +233,13 @@ public class Environment {
         return totalSize / agentList.size();
     }
 
+    public float getAverageVelocity() {
+        float totalDists = 0;
+        for(int i = 0; i < agentList.size(); i++) {
+            totalDists += agentList.get(i).getLastMove();
+        }
+        return totalDists / agentList.size();
+    }
 
     public void resetAgents() {
         agentList.clear();
@@ -292,5 +295,9 @@ public class Environment {
 
     public void setTickRate(double tickRate) {
         Environment.tickRate = tickRate;
+    }
+
+    public VisibilityBox getVisBox() {
+        return visBox;
     }
 }

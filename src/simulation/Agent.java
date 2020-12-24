@@ -2,7 +2,6 @@ package simulation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -20,7 +19,6 @@ public class Agent extends CollidableObject implements Serializable{
     private boolean add;
     private Matrix inputLayer;
     private NeuralNetwork neuralNet;
-    private long id;
     private Matrix outputLayer;
     private List<Agent> offspring;
 
@@ -28,8 +26,8 @@ public class Agent extends CollidableObject implements Serializable{
 
     private int numOffspring = 0;
     protected float age = 0;
-    private int generation = 0;
-
+    private int generation = 1;
+    private float lastMove = 0;
     protected float energy = 2;
 
     private static float moveComponent = (float).5; //amount of energy burned from moving vs existing
@@ -39,13 +37,13 @@ public class Agent extends CollidableObject implements Serializable{
 
     // constants for raytracing
     private static float[] rays = { -90, -60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60, 90 };  // degree values for each ray
-    private static float rayLength = 150;
+    public static float agentVision = 150;
+    private static float rayLength = agentVision;
     private static int nRays = rays.length;
 
-    private static int inputTypes = 3;  // food, walls, other agents 
+    private static int inputTypes = 3;  // food, walls, other agents
     private static int rayStep = 5;
 
-    
     private static int inputLength = (inputTypes + 1) * nRays + 1;
     private static int outputLength = 3;
 
@@ -54,17 +52,15 @@ public class Agent extends CollidableObject implements Serializable{
     // create a new agent
     public Agent(float x, float y, float radius, float direction, float speed, TileMap tileMap) {
         super(x, y, radius);
-    	
-        this.add = rand.nextBoolean();
+
+        add = rand.nextBoolean();
         this.direction = direction;
         this.speed = speed;
 
-        this.neuralNet = new NeuralNetwork(inputLength, 6, outputLength);
-        this.DNA = new byte[3];
+        neuralNet = new NeuralNetwork(inputLength, 8, outputLength);
+        DNA = new byte[3];
         rand.nextBytes(DNA);
-        this.offspring = new ArrayList<>();
-
-        this.generateID();
+        offspring = new ArrayList<>();
     }
 
     /** Creates a duplicate of given agent, spawned a given distance from it's original
@@ -73,25 +69,25 @@ public class Agent extends CollidableObject implements Serializable{
      * @param spawnDistance distance duplicate will be spawned away from original
      * @param tileMap  		tileMap to make sure the new agent isn't in a wall */
     public Agent(Agent agent, TileMap tileMap, int envWidth, int envHeight) {
-    	super(0, 0, agent.getRadius());
-    
+        super(0, 0, agent.getRadius());
+
         // loop until we have valid x and y coordinates
-    	float x, y;
-    	while (true) {
-        	x = agent.getX() + rand.nextFloat() * 200 - 100;
-        	y = agent.getY() + rand.nextFloat() * 200 - 100;
-        	
-        	x = Math.max(x, 0);
-        	x = Math.min(x, (float) envWidth);
-        	y = Math.max(y, 0);
-        	y = Math.min(y, (float) envHeight);
-        	
-        	// make sure agent isn't spawning in wall
-        	if (!tileMap.inWall(x, y)) {
-            	this.x = x;
-            	this.y = y;
-        		break;
-        	}
+        float x, y;
+        while (true) {
+            x = agent.getX() + rand.nextFloat() * 200 - 100;
+            y = agent.getY() + rand.nextFloat() * 200 - 100;
+
+            x = Math.max(x, 0);
+            x = Math.min(x, envWidth);
+            y = Math.max(y, 0);
+            y = Math.min(y, envHeight);
+
+            // make sure agent isn't spawning in wall
+            if (!tileMap.inWall(x, y)) {
+                this.x = x;
+                this.y = y;
+                break;
+            }
         }
 
         int toAdd = rand.nextInt(4);
@@ -114,8 +110,6 @@ public class Agent extends CollidableObject implements Serializable{
 
         agent.offspring.add(this);
         offspring = new ArrayList<>();
-
-        generateID();
     }
 
     // return a new radius mutated from param oldRadius
@@ -151,6 +145,7 @@ public class Agent extends CollidableObject implements Serializable{
 
         float distScale = Math.max((float).5,outputLayer.get(2));
         float moveDist = speed*distScale;
+        lastMove = moveDist;
         move(moveDist, e.getTileMap());
         // move the agent
 
@@ -268,7 +263,7 @@ public class Agent extends CollidableObject implements Serializable{
     }
 
     // setup the input layer for the neural network
-    private void pollEnvironment(Environment e) {       
+    private void pollEnvironment(Environment e) {
         float[] inputArray = new float[inputLength];
 
         // setup min dist arrays
@@ -280,36 +275,66 @@ public class Agent extends CollidableObject implements Serializable{
             minWallDist[i] = rayLength;
             minAgentDist[i] = rayLength;
         }
-        
+
         // pre-calculate ray directions
         float[] rayDirections = new float[rays.length];
         for (int i = 0; i < rays.length; ++i) {
             rayDirections[i] = normalizeDirection(direction + (float) (rays[i] * Math.PI / 180));
         }
-        
-        // get food distance
-        ArrayList<Food> foods = e.getFood();
-        for (Food element : foods) {
-            // get distance to agent
-            float dist = getDistance(element);
-            
-            // if within range
-            if (dist < rayLength) {
-                // get angle and arc length
-                float foodDirection = (float) Math.atan2(element.x - x, element.y - y);
-                float maxDirectionDeviation = Environment.foodRadius / dist;  // this is an approximation based on the arc length
-                
-                // loop thru each ray
-                for (int i = 0; i < rays.length; ++i) {
-                    float dirDiff = Math.abs(foodDirection - rayDirections[i]);
-                    
-                    if (dirDiff < maxDirectionDeviation && dist < minFoodDist[i]) {  // TODO there may be a small edge case here
-                        minFoodDist[i] = dist;
+
+        VisibilityBox visBox = e.getVisBox();
+        ArrayList<CollidableObject> toCheck = visBox.visibleCandidates(this);
+
+        for (CollidableObject o : toCheck) {
+            if(o instanceof Food) {
+                // get food distance
+                float dist = getDistance(o);
+
+                // if within range
+                if (dist < rayLength) {
+                    // get angle and arc length
+                    float foodDirection = (float) Math.atan2(o.x - x, o.y - y);
+                    float maxDirectionDeviation = Environment.foodRadius / dist;  // this is an approximation based on the arc length
+
+                    // loop thru each ray
+                    for (int i = 0; i < rays.length; ++i) {
+                        float dirDiff = Math.abs(foodDirection - rayDirections[i]);
+
+                        if (dirDiff < maxDirectionDeviation && dist < minFoodDist[i]) {  // TODO there may be a small edge case here
+                            minFoodDist[i] = dist;
+                        }
+                    }
+                }
+
+            } else if (o instanceof Agent) {
+                // get agent distance
+                // ignore this agent
+                if (o.getID() == getID()) {
+                    continue;
+                }
+
+                // get distance to agent
+                float dist = getDistance(o);
+
+                // if within range
+                if (dist < rayLength) {
+                    // get angle and arc length
+                    float foodDirection = (float) Math.atan2(o.x - x, o.y - y);
+                    float maxDirectionDeviation = Environment.foodRadius / dist;  // this is an approximation based on the arc length
+
+                    // loop thru each ray
+                    for (int i = 0; i < rays.length; ++i) {
+                        float dirDiff = Math.abs(foodDirection - rayDirections[i]);
+
+                        if (dirDiff < maxDirectionDeviation && dist < minAgentDist[i]) {
+                            minAgentDist[i] = dist;
+                        }
                     }
                 }
             }
         }
-        
+
+
         // get wall distance
         TileMap tileMap = e.getTileMap();
         // check each ray individually
@@ -319,60 +344,32 @@ public class Agent extends CollidableObject implements Serializable{
             float rayY = y;
             float stepX = (float) (Math.sin(rayDirections[i]) * rayStep);
             float stepY = (float) (Math.cos(rayDirections[i]) * rayStep);
-            
+
             // step along the ray
             for (int rayDist = 0; rayDist < rayLength; rayDist += rayStep) {
                 if (tileMap.inWall(rayX, rayY)) {
                     minWallDist[i] = rayDist;
                     break;
                 }
-                                
+
                 rayX += stepX;
                 rayY += stepY;
             }
         }
-        
-        // get agent distance
-        ArrayList<Agent> agents = e.getAgents();
-        for (Agent element : agents) {
-            // ignore this agent
-            if (element.getId() == id) {
-                continue;
-            }
-            
-            // get distance to agent
-            float dist = getDistance(element);
-            
-            // if within range
-            if (dist < rayLength) {
-                // get angle and arc length
-                float foodDirection = (float) Math.atan2(element.x - x, element.y - y);
-                float maxDirectionDeviation = Environment.foodRadius / dist;  // this is an approximation based on the arc length
-                
-                // loop thru each ray
-                for (int i = 0; i < rays.length; ++i) {
-                    float dirDiff = Math.abs(foodDirection - rayDirections[i]);
-                    
-                    if (dirDiff < maxDirectionDeviation && dist < minAgentDist[i]) {
-                        minAgentDist[i] = dist;
-                    }
-                }
-            }
-        }
-        
+
         // update the input array
         for (int i = 0; i < rays.length; ++i) {
             // TODO this is a bit sloppy, maybe use an enum?
-                        
+
             // see nothing
             if (minFoodDist[i] == rayLength && minWallDist[i] == rayLength && minAgentDist[i] == rayLength) {
                 inputArray[(inputTypes + 1) * i] = 1;
-            // see something but need to decide what
+                // see something but need to decide what
             } else {
                 // default to food closest
                 int closestOffset = 1;
                 float closestDist = minFoodDist[i];
-                
+
                 // check for wall closest
                 if (minWallDist[i] < closestDist) {
                     closestOffset = 2;
@@ -383,15 +380,15 @@ public class Agent extends CollidableObject implements Serializable{
                     closestOffset = 3;
                     closestDist = minAgentDist[i];
                 }
-                
+
                 // set values in input array
                 inputArray[(inputTypes + 1) * i] = closestDist / rayLength;
                 inputArray[(inputTypes + 1) * i + closestOffset] = 1;
             }
         }
-        
+
         // update the input layer class variable
-        inputLayer = Matrix.fromArray(inputArray);      
+        inputLayer = Matrix.fromArray(inputArray);
     }
 
 
@@ -416,11 +413,6 @@ public class Agent extends CollidableObject implements Serializable{
 
     private void pointTowards(CollidableObject o) {
         direction = (float) Math.atan2(o.x - x, o.y - y);
-    }
-
-    private void generateID() {
-        Random rand = new Random();
-        id = Math.abs(rand.nextLong());
     }
 
     public float[] getRays() {
@@ -467,10 +459,6 @@ public class Agent extends CollidableObject implements Serializable{
         return rand;
     }
 
-    public long getId() {
-        return id;
-    }
-
     public float getSpeed() {
         return speed;
     }
@@ -493,10 +481,6 @@ public class Agent extends CollidableObject implements Serializable{
 
     public void setSpeed(int speed) {
         this.speed= speed;
-    }
-
-    public long getID() {
-        return id;
     }
 
     public int getNumOffspring() {
@@ -530,8 +514,12 @@ public class Agent extends CollidableObject implements Serializable{
     public List<Agent> getOffspring() {
         return offspring;
     }
-    
+
     public int getInputTypes() {
-    	return inputTypes;
+        return inputTypes;
+    }
+
+    public float getLastMove() {
+        return lastMove;
     }
 }
